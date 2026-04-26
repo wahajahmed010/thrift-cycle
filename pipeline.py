@@ -12,6 +12,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from browse_api import get_active_counts
 from finding_api import get_sold_stats
+from fleek_scraper import get_fleek_prices
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "thrift_cycle.db")
 CAT_MAP_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "category_map.json")
@@ -209,6 +210,13 @@ def run_pipeline(keywords=None, marketplaces=None, days=30):
             total_sold = sold.get("sold_count", 0)
             avg_price = sold.get("avg_price", 0)
             
+            # Fleek wholesale cost data
+            fleek = get_fleek_prices(keyword)
+            fleek_cost = fleek.get("avg_price", 0) or fleek.get("min_price", 0)
+            fleek_min = fleek.get("min_price", 0)
+            margin = round(avg_price - fleek_cost, 2) if fleek_cost and avg_price else 0
+            roi = round((margin / fleek_cost) * 100, 1) if fleek_cost and margin else 0
+            
             sellability, confidence = calculate_sellability(total_sold, total_active, avg_price)
             trend = calculate_trend(keyword, mkt, sellability, conn)
             band = get_score_band(sellability)
@@ -238,14 +246,20 @@ def run_pipeline(keywords=None, marketplaces=None, days=30):
                 "active": total_active,
                 "sold": total_sold,
                 "avg_price": avg_price,
+                "fleek_cost": fleek_cost,
+                "fleek_min": fleek_min,
+                "margin": margin,
+                "roi": roi,
+                "fleek_source": fleek.get("source", "none"),
                 "sellability": sellability,
                 "confidence": confidence,
                 "trend": trend,
                 "band": band,
             })
             
+            margin_str = f" margin=€{margin} ROI={roi}%" if margin else ""
             print(f"  {mkt}: active={total_active}, sold={total_sold}, "
-                  f"avg=${avg_price}, index={sellability:.2f} [{band}] {trend}")
+                  f"avg=${avg_price}, index={sellability:.2f} [{band}] {trend}{margin_str}")
     
     # Cleanup: delete listings older than 30d
     cutoff = (datetime.utcnow() - timedelta(days=30)).strftime("%Y-%m-%d")

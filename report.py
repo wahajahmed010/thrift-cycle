@@ -8,26 +8,119 @@ import os
 from datetime import datetime
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "thrift_cycle.db")
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
 TELEGRAM_MAX_LEN = 4096
 
-def format_score(emoji, keyword, marketplace, active, sold, avg_price, str_pct, sellability, trend, confidence):
-    """Format a single line score."""
-    return f"{emoji} **{keyword}** ({marketplace.upper()})\n  STR: {str_pct}% | Avg: €{avg_price:.0f} | {trend} | {confidence}"
+def load_latest_data(date=None):
+    """Load pipeline data from JSON file (includes Fleek margins)."""
+    if date is None:
+        date = datetime.utcnow().strftime("%Y-%m-%d")
+    
+    data_file = os.path.join(DATA_DIR, f"{date}.json")
+    if os.path.exists(data_file):
+        with open(data_file) as f:
+            return json.load(f), date
+    
+    return None, date
 
 def generate_report(date=None):
     """Generate a Markdown report from pipeline data.
     
     Returns list of message strings (split for Telegram length limits).
     """
-    if date is None:
-        date = datetime.utcnow().strftime("%Y-%m-%d")
+    # Try JSON data first (has Fleek margins)
+    data, date = load_latest_data(date)
     
+    if data:
+        return generate_from_json(data, date)
+    
+    # Fallback to DB
+    return generate_from_db(date)
+
+def generate_from_json(data, date):
+    """Generate report from pipeline JSON output (includes Fleek margins)."""
+    results = data.get("results", [])
+    
+    if not results:
+        return [f"No data for {date}. Run pipeline first."]
+    
+    # Separate items with and without Fleek data
+    with_margin = [r for r in results if r.get("fleek_cost") and r.get("margin")]
+    without_margin = [r for r in results if not r.get("fleek_cost") or not r.get("margin")]
+    
+    # Sort: with_margin by ROI desc, without_margin by sellability desc
+    with_margin.sort(key=lambda x: x.get("roi", 0), reverse=True)
+    without_margin.sort(key=lambda x: x.get("sellability", 0), reverse=True)
+    
+    hot = [r for r in results if r.get("band") == "HOT"]
+    warm = [r for r in results if r.get("band") == "WARM"]
+    cold = [r for r in results if r.get("band") == "COLD"]
+    
+    messages = []
+    
+    # Header
+    header = f"📊 **Thrift-Cycle Report — {date}**\n"
+    header += f"{len(results)} items | {len(with_margin)} with Fleek margins\n\n"
+    
+    current_msg = header
+    
+    # Profitable items (sorted by ROI)
+    if with_margin:
+        section = "\n💰 **BEST MARGINS** (by ROI)\n"
+        for r in with_margin[:15]:
+            mkt = r.get("marketplace", "").upper()
+            trend = r.get("trend", "→")
+            band = r.get("band", "COLD")
+            band_emoji = {"HOT": "🔥", "WARM": "🌡️", "COLD": "❄️"}.get(band, "")
+            section += f"  {band_emoji}{trend} **{r['keyword']}** ({mkt})\n"
+            section += f"    Margin: €{r['margin']:.0f} | ROI: {r['roi']}% | STR: {r.get('sellability', 0)*100:.0f}%\n"
+            section += f"    Sell: €{r.get('avg_price', 0):.0f} | Source: ${r.get('fleek_cost', 0):.0f}/pc\n"
+        current_msg += section + "\n"
+    
+    # HOT items
+    if hot:
+        section = "🔥 **HOT** (sellability ≥ 0.60)\n"
+        for r in hot:
+            mkt = r.get("marketplace", "").upper()
+            trend = r.get("trend", "→")
+            margin_str = f" | Margin: €{r['margin']:.0f} ({r['roi']}%)" if r.get("margin") else ""
+            section += f"  {trend} **{r['keyword']}** ({mkt})\n"
+            section += f"    STR: {r.get('sellability', 0)*100:.0f}% | Avg: €{r.get('avg_price', 0):.0f} | Sold: {r.get('sold', 0)}{margin_str}\n"
+        current_msg += section + "\n"
+    
+    # WARM items
+    if warm:
+        section = "🌡️ **WARM** (0.30–0.59)\n"
+        for r in warm:
+            mkt = r.get("marketplace", "").upper()
+            trend = r.get("trend", "→")
+            margin_str = f" | M: €{r['margin']:.0f}" if r.get("margin") else ""
+            section += f"  {trend} **{r['keyword']}** ({mkt})\n"
+            section += f"    STR: {r.get('sellability', 0)*100:.0f}% | Avg: €{r.get('avg_price', 0):.0f}{margin_str}\n"
+        current_msg += section + "\n"
+    
+    # Trending
+    trending_up = [r for r in results if r.get("trend") == "▲"]
+    trending_down = [r for r in results if r.get("trend") == "▼"]
+    
+    footer = f"📈 Trending up: {len(trending_up)} | 📉 Cooling: {len(trending_down)}\n"
+    
+    if len(current_msg) + len(footer) > TELEGRAM_MAX_LEN:
+        messages.append(current_msg.strip())
+        current_msg = ""
+    
+    current_msg += footer
+    messages.append(current_msg.strip())
+    
+    return messages
+
+def generate_from_db(date):
+    """Fallback: generate report from SQLite DB (no Fleek margins)."""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
     
-    # Get today's snapshots (buying_option = 'all' for summary)
     c.execute("""
         SELECT keyword, marketplace, active_count, sold_count, 
                avg_price, str, sellability_index, confidence, trend_direction
@@ -42,65 +135,44 @@ def generate_report(date=None):
     if not rows:
         return [f"No data for {date}. Run pipeline first."]
     
-    # Group by score band
     hot = [r for r in rows if r["sellability_index"] >= 0.60]
     warm = [r for r in rows if 0.30 <= r["sellability_index"] < 0.60]
     cold = [r for r in rows if r["sellability_index"] < 0.30]
     
-    # Trending up/down
-    trending_up = [r for r in rows if r["trend_direction"] == "▲"]
-    trending_down = [r for r in rows if r["trend_direction"] == "▼"]
-    
     messages = []
-    
-    # Header
-    header = f"📊 **Thrift-Cycle Report — {date}**\n\n"
-    
-    # Build sections
-    sections = []
+    current_msg = f"📊 **Thrift-Cycle Report — {date}**\n\n"
     
     if hot:
         section = "🔥 **HOT** (index ≥ 0.60)\n"
         for r in hot:
             section += f"  {r['trend_direction']} **{r['keyword']}** ({r['marketplace'].upper()})\n"
             section += f"    STR: {r['str']}% | Avg: ${r['avg_price']:.0f} | Sold: {r['sold_count']} | {r['confidence']}\n"
-        sections.append(section)
+        current_msg += section + "\n"
     
     if warm:
         section = "🌡️ **WARM** (0.30–0.59)\n"
         for r in warm:
             section += f"  {r['trend_direction']} **{r['keyword']}** ({r['marketplace'].upper()})\n"
             section += f"    STR: {r['str']}% | Avg: ${r['avg_price']:.0f} | Sold: {r['sold_count']} | {r['confidence']}\n"
-        sections.append(section)
+        current_msg += section + "\n"
     
     if cold:
-        section = "❄️ **COLD** (< 0.30)\n"
-        for r in cold[:10]:  # Top 10 cold items only
+        section = "❄️ **COLD** (top 10)\n"
+        for r in cold[:10]:
             section += f"  {r['trend_direction']} **{r['keyword']}** ({r['marketplace'].upper()})\n"
             section += f"    STR: {r['str']}% | Avg: ${r['avg_price']:.0f} | Sold: {r['sold_count']} | {r['confidence']}\n"
         if len(cold) > 10:
             section += f"  ... and {len(cold) - 10} more\n"
-        sections.append(section)
-    
-    # Trending summary
-    trend_section = f"\n📈 **Trending up:** {len(trending_up)} items\n📉 **Cooling down:** {len(trending_down)} items\n"
-    
-    # Split into Telegram-sized messages
-    current_msg = header
-    
-    for section in sections:
-        if len(current_msg) + len(section) + len(trend_section) > TELEGRAM_MAX_LEN:
-            messages.append(current_msg.strip())
-            current_msg = ""
         current_msg += section + "\n"
     
-    current_msg += trend_section
-    messages.append(current_msg.strip())
+    trending_up = [r for r in rows if r["trend_direction"] == "▲"]
+    trending_down = [r for r in rows if r["trend_direction"] == "▼"]
+    current_msg += f"📈 Trending up: {len(trending_up)} | 📉 Cooling: {len(trending_down)}\n"
     
+    messages.append(current_msg.strip())
     return messages
 
 if __name__ == "__main__":
-    # Generate report from latest data
     print("=== Thrift-Cycle Report ===\n")
     messages = generate_report()
     for i, msg in enumerate(messages, 1):
