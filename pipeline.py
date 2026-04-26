@@ -11,7 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from browse_api import get_active_counts
-from finding_api import calculate_sold_stats
+from finding_api import get_sold_stats
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "thrift_cycle.db")
 CAT_MAP_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "category_map.json")
@@ -199,13 +199,13 @@ def run_pipeline(keywords=None, marketplaces=None, days=30):
             
             # Sold stats
             try:
-                sold = calculate_sold_stats(keyword, mkt, cat_id, days)
+                sold = get_sold_stats(keyword, mkt, cat_id, days)
             except Exception as e:
                 errors.append(f"{keyword} ({mkt}) finding: {e}")
                 continue
             
             # Calculate metrics
-            total_active = active.get("all", 0)
+            total_active = active.get("total", 0)
             total_sold = sold.get("sold_count", 0)
             avg_price = sold.get("avg_price", 0)
             
