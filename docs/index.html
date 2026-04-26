@@ -110,6 +110,7 @@ footer a:hover { color: #fff; }
     <p>Data sourced from eBay Browse API + Fleek wholesale pricing</p>
   </footer>
 </div>
+<script src="data.js"></script>
 <script>
 let DATA = [];
 let currentFilter = 'all';
@@ -117,6 +118,14 @@ let currentMarket = 'all';
 let currentSort = { field: 'roi', dir: 'desc' };
 
 async function loadData() {
+  // Try embedded data first
+  if (typeof PIPELINE_DATA !== 'undefined') {
+    DATA = PIPELINE_DATA.results || [];
+    document.getElementById('date').textContent = 'Updated: ' + PIPELINE_DATA.date;
+    render();
+    return;
+  }
+  // Fallback: fetch from JSON file
   try {
     const resp = await fetch('data/2026-04-26.json');
     if (resp.ok) {
