@@ -170,6 +170,38 @@ FLEEK_PRICES = {
     
     # Burberry
     "Burberry Scarf": {"min": 20, "avg": 30, "categories": ["Burberry"]},
+    # Summer-specific (DE Jun-Aug)
+    "Levi's Shorts": {"min": 10, "avg": 13, "categories": ["Levi's"]},
+    "Y2K Camisole": {"min": 11, "avg": 14, "categories": ["Y2K"]},
+    "Y2K Baby Tee": {"min": 7, "avg": 10, "categories": ["Y2K"]},
+    "Fjallraven Kanken": {"min": 15, "avg": 22, "categories": ["Fjallraven"]},
+    "Ralph Lauren Shorts": {"min": 9, "avg": 14, "categories": ["Ralph Lauren"]},
+    "Tommy Hilfiger Shorts": {"min": 8, "avg": 12, "categories": ["Tommy Hilfiger"]},
+    "North Face Nuptse": {"min": 22, "avg": 30, "categories": ["North Face"]},
+    "North Face Windbreaker": {"min": 12, "avg": 16, "categories": ["North Face"]},
+    "Nike Air Force 1": {"min": 7, "avg": 12, "categories": ["Nike"]},
+    "Nike Air Max": {"min": 9, "avg": 15, "categories": ["Nike"]},
+    "Nike Dunk": {"min": 8, "avg": 14, "categories": ["Nike"]},
+    "Nike Tech Fleece": {"min": 10, "avg": 15, "categories": ["Nike"]},
+    "Adidas Samba": {"min": 9, "avg": 15, "categories": ["Adidas"]},
+    "Adidas Gazelle": {"min": 8, "avg": 14, "categories": ["Adidas"]},
+    "Adidas Stan Smith": {"min": 7, "avg": 12, "categories": ["Adidas"]},
+    "Converse Chuck Taylor": {"min": 6, "avg": 10, "categories": ["Converse"]},
+    "Converse One Star": {"min": 7, "avg": 12, "categories": ["Converse"]},
+    "New Balance 550": {"min": 8, "avg": 14, "categories": ["New Balance"]},
+    "New Balance 574": {"min": 7, "avg": 12, "categories": ["New Balance"]},
+    "UGG Tasman": {"min": 12, "avg": 18, "categories": ["UGG"]},
+    "UGG Boots": {"min": 15, "avg": 22, "categories": ["UGG"]},
+    "Gymshark Shorts": {"min": 5, "avg": 8, "categories": ["Gymshark"]},
+    "Lululemon Define Jacket": {"min": 15, "avg": 22, "categories": ["Lululemon"]},
+    "Lululemon Scuba Hoodie": {"min": 14, "avg": 20, "categories": ["Lululemon"]},
+    "Juicy Couture Tracksuit": {"min": 14, "avg": 22, "categories": ["Juicy Couture"]},
+    "Champion Hoodie": {"min": 7, "avg": 11, "categories": ["Champion"]},
+    "Champion Sweatshirt": {"min": 6, "avg": 10, "categories": ["Champion"]},
+    "Columbia Jacket": {"min": 9, "avg": 14, "categories": ["Columbia"]},
+    "Columbia Shorts": {"min": 5, "avg": 9, "categories": ["Columbia"]},
+    "Carhartt Pants": {"min": 14, "avg": 20, "categories": ["Carhartt"]},
+
 }
 
 # Brand-level fallback (for keywords not in the detailed map)
@@ -204,6 +236,14 @@ BRAND_PRICES = {
     "Miu Miu": {"min": 20, "avg": 35},
     "Repetto": {"min": 15, "avg": 25},
     "Tory Burch": {"min": 15, "avg": 22},
+    "Fjallraven": {"min": 15, "avg": 22},
+    "Converse": {"min": 6, "avg": 10},
+    "New Balance": {"min": 7, "avg": 13},
+    "UGG": {"min": 12, "avg": 20},
+    "Juicy Couture": {"min": 14, "avg": 22},
+    "Champion": {"min": 6, "avg": 10},
+    "Columbia": {"min": 5, "avg": 11},
+    "Y2K": {"min": 7, "avg": 12},
 }
 
 

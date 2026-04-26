@@ -19,62 +19,43 @@ CAT_MAP_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "categor
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
 # All keywords
-KEYWORDS = [
-    "Birkenstock Arizona", "Birkenstock Boston", "Birkenstock Gizeh", "Birkenstock Madrid",
-    "Birkenstock EVA", "Lowa Renegade GTX", "Lowa Camino GTX", "Meindl Bhutan",
-    "Meindl Ortler", "Meindl Borneo", "Ortlieb Back-Roller", "Ortlieb Velocity",
-    "Jack Wolfskin 3in1 Jacket", "Jack Wolfskin DNA", "Deuter Aircontact 65+10",
-    # --- Fleek-sourced brands ---
-    # Carhartt (workwear/streetwear)
-    "Carhartt Detroit Jacket", "Carhartt WIP", "Carhartt Shorts", "Carhartt Pants",
-    # The North Face (outdoor/streetwear)
-    "North Face Puffer", "North Face Fleece", "North Face Nuptse", "North Face Windbreaker",
-    # Nike (sportswear)
+KEYWORDS = sorted(set([
+    # === Summer hot sellers (DE Jun-Aug) ===
+    "Birkenstock Arizona", "Birkenstock Boston", "Birkenstock Gizeh", "Birkenstock Madrid", "Birkenstock EVA",
+    "Adidas Samba", "Adidas Gazelle", "Adidas Stan Smith", "Adidas Track Pants",
     "Nike Air Force 1", "Nike Air Max", "Nike Dunk", "Nike Tech Fleece",
-    # Adidas (sportswear)
-    "Adidas Track Pants", "Adidas Samba", "Adidas Gazelle", "Adidas Stan Smith",
-    # Lululemon (activewear)
-    "Lululemon Leggings", "Lululemon Define Jacket", "Lululemon Scuba Hoodie",
-    # Ralph Lauren (polos/knitwear)
-    "Ralph Lauren Polo", "Ralph Lauren Sweater", "Ralph Lauren Shirt",
-    # Tommy Hilfiger
-    "Tommy Hilfiger Shirt", "Tommy Hilfiger Jacket",
-    # Lacoste
-    "Lacoste Polo",
-    # Champion
-    "Champion Hoodie", "Champion Sweatshirt",
-    # Columbia (outdoor)
-    "Columbia Jacket", "Columbia Shorts",
-    # Converse
-    "Converse Chuck Taylor", "Converse One Star",
-    # New Balance
     "New Balance 550", "New Balance 574",
-    # UGG
-    "UGG Boots", "UGG Tasman",
-    # Gymshark
+    "Converse Chuck Taylor", "Converse One Star",
+    "UGG Tasman", "UGG Boots",
+    "Levi's Shorts", "Vintage Levi's 501", "Vintage Levi's 501 80s", "Vintage Levi's 501 90s",
+    "Levi's 501 Made in USA", "Levi's 501 Red Line", "Levi's 501 Shrink-to-Fit",
+    "Y2K Camisole", "Y2K Baby Tee",
+    "Lululemon Leggings", "Lululemon Define Jacket", "Lululemon Scuba Hoodie",
     "Gymshark Leggings", "Gymshark Shorts",
-    # Juicy Couture
     "Juicy Couture Tracksuit",
-    # Levi's / Vintage Denim
-    "Vintage Levi's 501", "Levi's 501 Made in USA", "Levi's 501 Red Line",
-    "Levi's 501 Shrink-to-Fit", "Vintage Levi's 501 80s", "Vintage Levi's 501 90s",
-    # --- Specialty / Not on Fleek ---
-    # German Outdoor
-    "Birkenstock Arizona", "Birkenstock Boston", "Birkenstock Gizeh", "Birkenstock Madrid",
-    "Birkenstock EVA", "Lowa Renegade GTX", "Lowa Camino GTX", "Meindl Bhutan",
-    "Meindl Ortler", "Meindl Borneo", "Ortlieb Back-Roller", "Ortlieb Velocity",
-    "Jack Wolfskin 3in1 Jacket", "Jack Wolfskin DNA", "Deuter Aircontact 65+10",
-    "Deuter Futura", "Vaude Brenta",
-    # Patagonia
+    "Fjallraven Kanken",
+    "North Face Puffer", "North Face Fleece", "North Face Nuptse", "North Face Windbreaker",
+    "Columbia Jacket", "Columbia Shorts",
+    "Carhartt Detroit Jacket", "Carhartt WIP", "Carhartt Shorts", "Carhartt Pants",
+    "Ralph Lauren Polo", "Ralph Lauren Shirt", "Ralph Lauren Sweater", "Ralph Lauren Shorts",
+    "Tommy Hilfiger Shirt", "Tommy Hilfiger Jacket", "Tommy Hilfiger Shorts",
+    "Lacoste Polo",
+    "Champion Hoodie", "Champion Sweatshirt",
+    # === Outdoor & Hiking (year-round DE) ===
+    "Lowa Renegade GTX", "Lowa Camino GTX",
+    "Meindl Bhutan", "Meindl Ortler", "Meindl Borneo",
+    "Ortlieb Back-Roller", "Ortlieb Velocity",
+    "Jack Wolfskin 3in1 Jacket", "Jack Wolfskin DNA",
+    "Deuter Aircontact 65+10", "Deuter Futura", "Vaude Brenta",
     "Patagonia Retro-X Fleece", "Patagonia Better Sweater",
     "Patagonia Nano Puff", "Patagonia Houdini", "Patagonia Synchilla",
-    # Arc'teryx
+    # === Rain & Hardshell (specialty) ===
     "Arc'teryx Beta LT", "Arc'teryx Atom LT", "Arc'teryx Zeta SL",
     "Arc'teryx Alpha SV", "Arc'teryx Gamma MX",
-    # Designer Shoes
+    # === Designer Shoes (luxury resale) ===
     "Chanel Ballerinas", "Miu Miu Ballerinas", "Miu Miu Ballet Flats",
     "Repetto Ballerinas", "Tory Burch Ballet Flats",
-]
+]))
 
 MARKETPLACES = ["de", "us"]
 
