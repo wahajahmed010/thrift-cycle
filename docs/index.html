@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thrift-Cycle Predictor</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0a0a0f; color: #e0e0e6; min-height: 100vh; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+header { text-align: center; padding: 40px 0 30px; border-bottom: 1px solid #1a1a2e; margin-bottom: 30px; }
+header h1 { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #ff6b35, #f7c948); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+header p { color: #888; margin-top: 8px; font-size: 0.95rem; }
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 30px; }
+.stat-card { background: #12121a; border: 1px solid #1e1e2e; border-radius: 12px; padding: 16px; text-align: center; }
+.stat-card .value { font-size: 1.8rem; font-weight: 700; }
+.stat-card .label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+.hot .value { color: #ff6b35; }
+.warm .value { color: #f7c948; }
+.cold .value { color: #4a9eff; }
+.margin-color .value { color: #2ecc71; }
+.filters { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+.filters button { background: #1a1a2e; border: 1px solid #2a2a3e; color: #aaa; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+.filters button:hover, .filters button.active { background: #2a2a3e; color: #fff; border-color: #4a4a6e; }
+.filters button.active-hot { background: #3a1a0a; color: #ff6b35; border-color: #ff6b35; }
+.filters button.active-warm { background: #3a2a0a; color: #f7c948; border-color: #f7c948; }
+.filters button.active-cold { background: #0a1a3a; color: #4a9eff; border-color: #4a9eff; }
+.filters select { background: #1a1a2e; border: 1px solid #2a2a3e; color: #ccc; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+thead th { position: sticky; top: 0; background: #0a0a0f; padding: 12px 8px; text-align: left; color: #888; font-weight: 600; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.05em; border-bottom: 1px solid #1e1e2e; cursor: pointer; }
+thead th:hover { color: #fff; }
+thead th.sorted-asc::after { content: ' ↑'; color: #f7c948; }
+thead th.sorted-desc::after { content: ' ↓'; color: #f7c948; }
+tbody tr { border-bottom: 1px solid #111120; transition: background 0.15s; }
+tbody tr:hover { background: #14142a; }
+tbody td { padding: 10px 8px; }
+.band { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+.band-HOT { background: #3a1a0a; color: #ff6b35; }
+.band-WARM { background: #3a2a0a; color: #f7c948; }
+.band-COLD { background: #0a1a3a; color: #4a9eff; }
+.trend { font-size: 1rem; }
+.trend-up { color: #2ecc71; }
+.trend-down { color: #e74c3c; }
+.trend-flat { color: #888; }
+.roi-good { color: #2ecc71; font-weight: 600; }
+.roi-mid { color: #f7c948; }
+.roi-low { color: #888; }
+.marketplace { font-size: 0.75rem; padding: 2px 6px; border-radius: 3px; background: #1a1a2e; color: #aaa; }
+.marketplace-de { border-left: 2px solid #ff6b35; }
+.marketplace-us { border-left: 2px solid #4a9eff; }
+footer { text-align: center; padding: 40px 0 20px; color: #555; font-size: 0.8rem; }
+footer a { color: #888; text-decoration: none; }
+footer a:hover { color: #fff; }
+.empty { text-align: center; padding: 60px; color: #555; }
+@media (max-width: 768px) {
+  .container { padding: 10px; }
+  header h1 { font-size: 1.5rem; }
+  table { font-size: 0.75rem; }
+  thead th, tbody td { padding: 6px 4px; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🦌 Thrift-Cycle Predictor</h1>
+    <p>eBay DE + US resale intelligence — sell-through rates, margins &amp; trends</p>
+    <p id="date"></p>
+  </header>
+  <div class="stats-row" id="stats"></div>
+  <div class="filters">
+    <button onclick="filter('all')" class="active" id="btn-all">All</button>
+    <button onclick="filter('HOT')" id="btn-HOT">🔥 Hot</button>
+    <button onclick="filter('WARM')" id="btn-WARM">🌡️ Warm</button>
+    <button onclick="filter('COLD')" id="btn-COLD">❄️ Cold</button>
+    <span style="color:#555">|</span>
+    <select id="market-filter" onchange="applyFilters()">
+      <option value="all">All Markets</option>
+      <option value="de">🇩🇪 DE Only</option>
+      <option value="us">🇺🇸 US Only</option>
+    </select>
+    <span style="color:#555">|</span>
+    <button onclick="sortBy('roi')" id="btn-roi">💰 Sort by ROI</button>
+    <button onclick="sortBy('str')" id="btn-str">📊 Sort by STR</button>
+    <button onclick="sortBy('margin')" id="btn-margin">💶 Sort by Margin</button>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th onclick="sortBy('keyword')">Item</th>
+        <th onclick="sortBy('marketplace')">Market</th>
+        <th onclick="sortBy('band')">Band</th>
+        <th onclick="sortBy('str')">STR</th>
+        <th onclick="sortBy('sellability')">Index</th>
+        <th onclick="sortBy('trend')">Trend</th>
+        <th onclick="sortBy('avg_price')">Avg Sold</th>
+        <th onclick="sortBy('active')">Active</th>
+        <th onclick="sortBy('sold')">Sold</th>
+        <th onclick="sortBy('fleek_cost')">Fleek Cost</th>
+        <th onclick="sortBy('margin')">Margin</th>
+        <th onclick="sortBy('roi')">ROI</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+  <div class="empty" id="empty" style="display:none">No data yet. Run the pipeline first.</div>
+  <footer>
+    <p>Thrift-Cycle Predictor — <a href="https://github.com/wahajahmed010/thrift-cycle">GitHub</a></p>
+    <p>Data sourced from eBay Browse API + Fleek wholesale pricing</p>
+  </footer>
+</div>
+<script>
+let DATA = [];
+let currentFilter = 'all';
+let currentMarket = 'all';
+let currentSort = { field: 'roi', dir: 'desc' };
+
+async function loadData() {
+  try {
+    const resp = await fetch('data/2026-04-26.json');
+    if (resp.ok) {
+      const json = await resp.json();
+      DATA = json.results || [];
+      document.getElementById('date').textContent = 'Updated: ' + json.date;
+    }
+  } catch(e) {}
+  if (DATA.length === 0) {
+    document.getElementById('empty').style.display = 'block';
+    return;
+  }
+  render();
+}
+
+function getFiltered() {
+  let items = DATA;
+  if (currentFilter !== 'all') items = items.filter(i => i.band === currentFilter);
+  if (currentMarket !== 'all') items = items.filter(i => i.marketplace === currentMarket);
+  items.sort((a, b) => {
+    const va = getSortValue(a, currentSort.field);
+    const vb = getSortValue(b, currentSort.field);
+    if (typeof va === 'string') return currentSort.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    return currentSort.dir === 'asc' ? va - vb : vb - va;
+  });
+  return items;
+}
+
+function getSortValue(item, field) {
+  switch(field) {
+    case 'str': return item.active > 0 ? (item.sold / (item.sold + item.active) * 100) : 0;
+    case 'sellability': return item.sellability || 0;
+    case 'roi': return item.roi || 0;
+    case 'margin': return item.margin || 0;
+    case 'avg_price': return item.avg_price || 0;
+    case 'active': return item.active || 0;
+    case 'sold': return item.sold || 0;
+    case 'fleek_cost': return item.fleek_cost || 0;
+    case 'keyword': return item.keyword || '';
+    case 'marketplace': return item.marketplace || '';
+    case 'band': return item.band || '';
+    case 'trend': return item.trend || '';
+    default: return 0;
+  }
+}
+
+function render() {
+  renderStats();
+  renderTable();
+}
+
+function renderStats() {
+  const hot = DATA.filter(i => i.band === 'HOT').length;
+  const warm = DATA.filter(i => i.band === 'WARM').length;
+  const cold = DATA.filter(i => i.band === 'COLD').length;
+  const withMargin = DATA.filter(i => i.margin && i.margin > 0).length;
+  const bestROI = DATA.reduce((best, i) => (i.roi || 0) > (best.roi || 0) ? i : best, DATA[0]);
+  const avgSTR = DATA.reduce((sum, i) => sum + (i.active > 0 ? i.sold / (i.sold + i.active) * 100 : 0), 0) / DATA.length;
+  document.getElementById('stats').innerHTML =
+    '<div class="stat-card hot"><div class="value">' + hot + '</div><div class="label">\uD83D\uDD25 Hot</div></div>' +
+    '<div class="stat-card warm"><div class="value">' + warm + '</div><div class="label">\uD83C\uDF21\uFE0F Warm</div></div>' +
+    '<div class="stat-card cold"><div class="value">' + cold + '</div><div class="label">\u2744\uFE0F Cold</div></div>' +
+    '<div class="stat-card"><div class="value">' + DATA.length + '</div><div class="label">Total Items</div></div>' +
+    '<div class="stat-card margin-color"><div class="value">' + withMargin + '</div><div class="label">\uD83D\uDCB0 With Margins</div></div>' +
+    '<div class="stat-card"><div class="value">' + avgSTR.toFixed(1) + '%</div><div class="label">Avg STR</div></div>';
+}
+
+function renderTable() {
+  const items = getFiltered();
+  const tbody = document.getElementById('table-body');
+  if (items.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:#555;padding:40px">No items match your filters</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(function(i) {
+    const str = i.active > 0 ? (i.sold / (i.sold + i.active) * 100).toFixed(1) : '0.0';
+    const trend = i.trend === '\u25B2' ? 'trend-up' : i.trend === '\u25BC' ? 'trend-down' : 'trend-flat';
+    const mktClass = i.marketplace === 'de' ? 'marketplace-de' : 'marketplace-us';
+    const roiClass = (i.roi || 0) >= 200 ? 'roi-good' : (i.roi || 0) >= 50 ? 'roi-mid' : 'roi-low';
+    const margin = i.margin ? '\u20AC' + i.margin.toFixed(0) : '\u2014';
+    const roi = i.roi ? i.roi.toFixed(0) + '%' : '\u2014';
+    const cost = i.fleek_cost ? '$' + i.fleek_cost.toFixed(0) : '\u2014';
+    return '<tr>' +
+      '<td><strong>' + i.keyword + '</strong></td>' +
+      '<td><span class="marketplace ' + mktClass + '">' + i.marketplace.toUpperCase() + '</span></td>' +
+      '<td><span class="band band-' + i.band + '">' + i.band + '</span></td>' +
+      '<td>' + str + '%</td>' +
+      '<td>' + (i.sellability || 0).toFixed(2) + '</td>' +
+      '<td><span class="trend ' + trend + '">' + i.trend + '</span></td>' +
+      '<td>\u20AC' + (i.avg_price || 0).toFixed(0) + '</td>' +
+      '<td>' + (i.active || 0) + '</td>' +
+      '<td>' + (i.sold || 0) + '</td>' +
+      '<td>' + cost + '</td>' +
+      '<td>' + margin + '</td>' +
+      '<td class="' + roiClass + '">' + roi + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function filter(band) {
+  currentFilter = band;
+  document.querySelectorAll('.filters button').forEach(function(b) { b.className = ''; });
+  var btn = document.getElementById('btn-' + band);
+  if (band === 'all') btn.className = 'active';
+  else if (band === 'HOT') btn.className = 'active-hot';
+  else if (band === 'WARM') btn.className = 'active-warm';
+  else if (band === 'COLD') btn.className = 'active-cold';
+  currentMarket = document.getElementById('market-filter').value;
+  render();
+}
+
+function applyFilters() {
+  currentMarket = document.getElementById('market-filter').value;
+  render();
+}
+
+function sortBy(field) {
+  if (currentSort.field === field) {
+    currentSort.dir = currentSort.dir === 'desc' ? 'asc' : 'desc';
+  } else {
+    currentSort.field = field;
+    currentSort.dir = 'desc';
+  }
+  render();
+}
+
+loadData();
+</script>
+</body>
+</html>
