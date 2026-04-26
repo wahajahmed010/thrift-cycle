@@ -23,15 +23,16 @@ header p{color:#888;margin-top:8px;font-size:.95rem}
 .filters button.active-warm{background:#3a2a0a;color:#f7c948;border-color:#f7c948}
 .filters button.active-cold{background:#0a1a3a;color:#4a9eff;border-color:#4a9eff}
 .filters select{background:#1a1a2e;border:1px solid #2a2a3e;color:#ccc;padding:8px 12px;border-radius:8px;font-size:.85rem}
-.brand-group{margin-bottom:24px;border:1px solid #1e1e2e;border-radius:12px;overflow:hidden}
-.brand-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#12121a;cursor:pointer;user-select:none}
-.brand-header:hover{background:#16162a}
-.brand-name{font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:10px}
-.brand-name .emoji{font-size:1.3rem}
-.brand-stats{display:flex;gap:16px;font-size:.8rem;color:#888}
-.brand-stats span{display:flex;align-items:center;gap:4px}
-.brand-body{display:none}
-.brand-body.open{display:block}
+.cat-group{margin-bottom:28px}
+.cat-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:linear-gradient(135deg,#16162a,#1a1a2e);border:1px solid #252540;border-radius:12px 12px 0 0;cursor:pointer;user-select:none}
+.cat-header:hover{background:linear-gradient(135deg,#1a1a30,#1e1e35)}
+.cat-header.open{border-radius:12px 12px 0 0;border-bottom:none}
+.cat-name{font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:10px}
+.cat-name .emoji{font-size:1.4rem}
+.cat-stats{display:flex;gap:16px;font-size:.82rem;color:#aaa}
+.cat-stats .best{color:#2ecc71;font-weight:600}
+.brand-section{border-left:1px solid #1e1e2e;border-right:1px solid #1e1e2e}
+.brand-label{padding:8px 18px;background:#0f0f1a;font-size:.8rem;font-weight:600;color:#f7c948;border-bottom:1px solid #1a1a28;letter-spacing:.03em}
 table{width:100%;border-collapse:collapse;font-size:.82rem}
 thead th{position:sticky;top:0;background:#0d0d18;padding:10px 8px;text-align:left;color:#888;font-weight:600;text-transform:uppercase;font-size:.7rem;letter-spacing:.05em;border-bottom:1px solid #1e1e2e;cursor:pointer}
 thead th:hover{color:#fff}
@@ -44,11 +45,12 @@ tbody td{padding:8px}
 .roi-good{color:#2ecc71;font-weight:600}.roi-mid{color:#f7c948}.roi-low{color:#888}
 .marketplace{font-size:.72rem;padding:2px 6px;border-radius:3px;background:#1a1a2e;color:#aaa}
 .marketplace-de{border-left:2px solid #ff6b35}.marketplace-us{border-left:2px solid #4a9eff}
-.best-roi{color:#2ecc71;font-weight:700;font-size:.8rem}
+.cat-body{display:none;border:1px solid #1e1e2e;border-top:none;border-radius:0 0 12px 12px;overflow:hidden}
+.cat-body.open{display:block}
 footer{text-align:center;padding:40px 0 20px;color:#555;font-size:.8rem}
 footer a{color:#888;text-decoration:none}footer a:hover{color:#fff}
 .empty{text-align:center;padding:60px;color:#555}
-@media(max-width:768px){.container{padding:10px}header h1{font-size:1.5rem}table{font-size:.72rem}thead th,tbody td{padding:5px 3px}.stats-row{grid-template-columns:repeat(2,1fr)}.brand-stats{flex-direction:column;gap:4px}}
+@media(max-width:768px){.container{padding:10px}header h1{font-size:1.5rem}table{font-size:.72rem}thead th,tbody td{padding:5px 3px}.stats-row{grid-template-columns:repeat(2,1fr)}.cat-stats{flex-direction:column;gap:4px}}
 </style>
 </head>
 <body>
@@ -73,7 +75,7 @@ footer a{color:#888;text-decoration:none}footer a:hover{color:#fff}
     <button onclick="toggleAll()" id="btn-toggle">▼ Expand All</button>
   </div>
   <div id="groups"></div>
-  <div class="empty" id="empty" style="display:none">No data yet. Run the pipeline first.</div>
+  <div class="empty" id="empty" style="display:none">No data yet.</div>
   <footer>
     <p>Thrift-Cycle Predictor — <a href="https://github.com/wahajahmed010/thrift-cycle">GitHub</a></p>
     <p>Data: eBay Browse API + Fleek wholesale pricing | Updated daily</p>
@@ -87,17 +89,50 @@ let currentMarket = 'all';
 let currentSort = { field: 'roi', dir: 'desc' };
 let allExpanded = false;
 
-// Brand groupings (like Fleek categories)
-const BRAND_GROUPS = [
-  { name: "Birkenstock", emoji: "🩴", keywords: ["Birkenstock"] },
-  { name: "Hiking Boots", emoji: "🥾", keywords: ["Lowa", "Meindl"] },
-  { name: "Outdoor Gear", emoji: "🎒", keywords: ["Ortlieb", "Deuter", "Vaude", "Jack Wolfskin"] },
-  { name: "Patagonia", emoji: "🏔️", keywords: ["Patagonia"] },
-  { name: "Arc'teryx", emoji: "🧗", keywords: ["Arc'teryx"] },
-  { name: "Levi's & Vintage Denim", emoji: "👖", keywords: ["Levi's", "Vintage Levi's"] },
-  { name: "Designer Shoes", emoji: "👠", keywords: ["Chanel", "Miu Miu", "Repetto", "Tory Burch"] },
-  { name: "Premium Brands", emoji: "👔", keywords: ["Ralph Lauren", "Tommy Hilfiger", "Lululemon"] },
+// Product-type groups (like Fleek categories), then brands inside
+const PRODUCT_TYPES = [
+  { name: "Hiking Boots", emoji: "🥾", brands: ["Lowa", "Meindl"] },
+  { name: "Outdoor Gear", emoji: "🎒", brands: ["Ortlieb", "Deuter", "Vaude", "Jack Wolfskin"] },
+  { name: "Fleece & Sweaters", emoji: "🧥", brands: ["Patagonia"] },
+  { name: "Rain & Hardshell Jackets", emoji: "🌧️", brands: ["Arc'teryx"] },
+  { name: "Sandals & Summer Shoes", emoji: "🩴", brands: ["Birkenstock"] },
+  { name: "Denim & Vintage Jeans", emoji: "👖", brands: ["Levi's"] },
+  { name: "Designer Flats & Heels", emoji: "👠", brands: ["Chanel", "Miu Miu", "Repetto", "Tory Burch"] },
+  { name: "Polo & Button-Down Shirts", emoji: "👔", brands: ["Ralph Lauren", "Tommy Hilfiger"] },
+  { name: "Activewear & Leggings", emoji: "🏋️", brands: ["Lululemon"] },
 ];
+
+// Map keywords to product types
+function getProductType(keyword) {
+  for (const pt of PRODUCT_TYPES) {
+    if (pt.brands.some(b => keyword.includes(b))) {
+      // Refine Patagonia into Fleece vs other
+      if (keyword.includes("Patagonia")) {
+        if (keyword.includes("Retro-X") || keyword.includes("Better Sweater") || keyword.includes("Synchilla")) return "Fleece & Sweaters";
+        return "Outdoor Jackets & Vests";
+      }
+      // Refine Arc'teryx into Rain vs Insulated
+      if (keyword.includes("Arc")) {
+        if (keyword.includes("Atom") || keyword.includes("Gamma")) return "Insulated & Softshell";
+        return "Rain & Hardshell Jackets";
+      }
+      // Refine Levi's
+      if (keyword.includes("Levi") || keyword.includes("Vintage Levi")) return "Denim & Vintage Jeans";
+      return pt.name;
+    }
+  }
+  return "Other";
+}
+
+function getBrand(keyword) {
+  const brands = ["Birkenstock","Lowa","Meindl","Ortlieb","Deuter","Vaude","Jack Wolfskin",
+    "Patagonia","Arc'teryx","Levi's","Vintage Levi's","Chanel","Miu Miu","Repetto","Tory Burch",
+    "Ralph Lauren","Tommy Hilfiger","Lululemon"];
+  for (const b of brands) {
+    if (keyword.includes(b)) return b;
+  }
+  return "Other";
+}
 
 function loadData() {
   if (typeof PIPELINE_DATA !== 'undefined') {
@@ -108,34 +143,7 @@ function loadData() {
   render();
 }
 
-function groupItems(items) {
-  const groups = [];
-  const assigned = new Set();
-  for (const bg of BRAND_GROUPS) {
-    const groupItems = items.filter(i => bg.keywords.some(k => i.keyword.includes(k)));
-    if (groupItems.length > 0) {
-      groups.push({ ...bg, items: groupItems });
-      groupItems.forEach(i => assigned.add(i.keyword + '|' + i.marketplace));
-    }
-  }
-  const ungrouped = items.filter(i => !assigned.has(i.keyword + '|' + i.marketplace));
-  if (ungrouped.length > 0) groups.push({ name: "Other", emoji: "📦", items: ungrouped });
-  return groups;
-}
-
-function getStr(item) {
-  return item.active > 0 ? (item.sold / (item.sold + item.active) * 100) : 0;
-}
-
-function getGroupBestRoi(items) {
-  const withRoi = items.filter(i => i.roi && i.roi > 0);
-  if (withRoi.length === 0) return null;
-  return withRoi.reduce((best, i) => i.roi > best.roi ? i : best, withRoi[0]);
-}
-
-function getGroupAvgStr(items) {
-  return items.reduce((sum, i) => sum + getStr(i), 0) / items.length;
-}
+function getStr(item) { return item.active > 0 ? (item.sold / (item.sold + item.active) * 100) : 0; }
 
 function getSortValue(item, field) {
   switch(field) {
@@ -183,60 +191,92 @@ function renderGroups() {
   let filtered = DATA;
   if (currentFilter !== 'all') filtered = filtered.filter(i => i.band === currentFilter);
   if (currentMarket !== 'all') filtered = filtered.filter(i => i.marketplace === currentMarket);
-  
-  const groups = groupItems(filtered);
+
+  // Group by product type, then by brand
+  const typeGroups = {};
+  const typeOrder = ["Hiking Boots","Outdoor Gear","Outdoor Jackets & Vests","Fleece & Sweaters",
+    "Rain & Hardshell Jackets","Insulated & Softshell","Sandals & Summer Shoes","Denim & Vintage Jeans",
+    "Designer Flats & Heels","Polo & Button-Down Shirts","Activewear & Leggings","Other"];
+  const typeEmojis = {"Hiking Boots":"🥾","Outdoor Gear":"🎒","Outdoor Jackets & Vests":"🧥","Fleece & Sweaters":"🧶",
+    "Rain & Hardshell Jackets":"🌧️","Insulated & Softshell":"🧥","Sandals & Summer Shoes":"🩴",
+    "Denim & Vintage Jeans":"👖","Designer Flats & Heels":"👠","Polo & Button-Down Shirts":"👔",
+    "Activewear & Leggings":"🏋️","Other":"📦"};
+
+  filtered.forEach(item => {
+    const pt = getProductType(item.keyword);
+    const brand = getBrand(item.keyword);
+    if (!typeGroups[pt]) typeGroups[pt] = {};
+    if (!typeGroups[pt][brand]) typeGroups[pt][brand] = [];
+    typeGroups[pt][brand].push(item);
+  });
+
   const container = document.getElementById('groups');
-  container.innerHTML = groups.map((g, gi) => {
-    const sorted = sortItems(g.items);
-    const bestRoi = getGroupBestRoi(sorted);
-    const avgStr = getGroupAvgStr(sorted).toFixed(1);
-    const avgMargin = sorted.filter(i => i.margin > 0).reduce((s, i) => s + i.margin, 0) / Math.max(1, sorted.filter(i => i.margin > 0).length);
-    const bestStr = bestRoi ? 'Best: ' + bestRoi.keyword + ' ' + Math.round(bestRoi.roi) + '% ROI' : '';
-    return '<div class="brand-group" id="group-' + gi + '">' +
-      '<div class="brand-header" onclick="toggleGroup(' + gi + ')">' +
-        '<div class="brand-name"><span class="emoji">' + g.emoji + '</span>' + g.name + ' <span style="color:#555;font-size:.8rem">(' + sorted.length + ')</span></div>' +
-        '<div class="brand-stats">' +
-          '<span>STR ' + avgStr + '%</span>' +
-          (avgMargin > 0 ? '<span>€' + Math.round(avgMargin) + ' avg margin</span>' : '') +
-          (bestRoi ? '<span class="best-roi">🔥 ' + bestRoi.roi.toFixed(0) + '% ROI</span>' : '') +
-        '</div>' +
-      '</div>' +
-      '<div class="brand-body" id="body-' + gi + '">' +
-        '<table><thead><tr>' +
-          '<th onclick="sortBy(\'keyword\')">Item</th>' +
-          '<th>Mkt</th><th>Band</th><th onclick="sortBy(\'str\')">STR</th>' +
-          '<th onclick="sortBy(\'avg_price\')">Sold</th><th>Active</th><th>Sold</th>' +
-          '<th onclick="sortBy(\'fleek_cost\')">Cost</th><th onclick="sortBy(\'margin\')">Margin</th>' +
-          '<th onclick="sortBy(\'roi\')">ROI</th>' +
-        '</tr></thead><tbody>' +
-        sorted.map(i => {
-          const str = getStr(i).toFixed(1);
-          const mktClass = i.marketplace === 'de' ? 'marketplace-de' : 'marketplace-us';
-          const roiClass = (i.roi||0) >= 200 ? 'roi-good' : (i.roi||0) >= 50 ? 'roi-mid' : 'roi-low';
-          const cost = i.fleek_cost ? '$' + i.fleek_cost.toFixed(0) : '—';
-          const margin = i.margin ? '€' + i.margin.toFixed(0) : '—';
-          const roi = i.roi ? i.roi.toFixed(0) + '%' : '—';
-          return '<tr><td><strong>' + i.keyword + '</strong></td>' +
-            '<td><span class="marketplace ' + mktClass + '">' + i.marketplace.toUpperCase() + '</span></td>' +
-            '<td><span class="band band-' + i.band + '">' + i.band + '</span></td>' +
-            '<td>' + str + '%</td>' +
-            '<td>€' + (i.avg_price||0).toFixed(0) + '</td><td>' + (i.active||0) + '</td><td>' + (i.sold||0) + '</td>' +
-            '<td>' + cost + '</td><td>' + margin + '</td><td class="' + roiClass + '">' + roi + '</td></tr>';
-        }).join('') +
-        '</tbody></table></div></div>';
-  }).join('');
+  let html = '';
+  const orderedTypes = typeOrder.filter(t => typeGroups[t]);
+
+  orderedTypes.forEach((type, ti) => {
+    const brands = typeGroups[type];
+    const allItems = Object.values(brands).flat();
+    const bestRoi = allItems.filter(i => i.roi > 0).reduce((b, i) => i.roi > b.roi ? i : b, allItems[0]);
+    const avgStr = allItems.reduce((s, i) => s + getStr(i), 0) / allItems.length;
+    const avgMargin = allItems.filter(i => i.margin > 0).reduce((s, i) => s + i.margin, 0) / Math.max(1, allItems.filter(i => i.margin > 0).length);
+    const emoji = typeEmojis[type] || '📦';
+
+    html += '<div class="cat-group">';
+    html += '<div class="cat-header" onclick="toggleGroup(' + ti + ')">';
+    html += '<div class="cat-name"><span class="emoji">' + emoji + '</span>' + type + ' <span style="color:#555;font-size:.8rem">(' + allItems.length + ')</span></div>';
+    html += '<div class="cat-stats">';
+    html += '<span>STR ' + avgStr.toFixed(1) + '%</span>';
+    if (avgMargin > 0) html += '<span>€' + Math.round(avgMargin) + ' avg margin</span>';
+    if (bestRoi && bestRoi.roi) html += '<span class="best">🔥 ' + bestRoi.roi.toFixed(0) + '% ROI</span>';
+    html += '</div></div>';
+    html += '<div class="cat-body" id="body-' + ti + '">';
+
+    const sortedBrands = Object.keys(brands).sort();
+    sortedBrands.forEach(brand => {
+      const items = sortItems(brands[brand]);
+      html += '<div class="brand-section">';
+      html += '<div class="brand-label">' + brand + '</div>';
+      html += '<table><thead><tr>';
+      html += '<th>Item</th><th>Mkt</th><th>Band</th><th onclick="sortBy(\'str\')">STR</th>';
+      html += '<th onclick="sortBy(\'avg_price\')">Sold</th><th>Active</th><th>Sold</th>';
+      html += '<th onclick="sortBy(\'fleek_cost\')">Cost</th><th onclick="sortBy(\'margin\')">Margin</th><th onclick="sortBy(\'roi\')">ROI</th>';
+      html += '</tr></thead><tbody>';
+      items.forEach(i => {
+        const str = getStr(i).toFixed(1);
+        const mktClass = i.marketplace === 'de' ? 'marketplace-de' : 'marketplace-us';
+        const roiClass = (i.roi||0) >= 200 ? 'roi-good' : (i.roi||0) >= 50 ? 'roi-mid' : 'roi-low';
+        const cost = i.fleek_cost ? '$' + i.fleek_cost.toFixed(0) : '—';
+        const margin = i.margin ? '€' + i.margin.toFixed(0) : '—';
+        const roi = i.roi ? i.roi.toFixed(0) + '%' : '—';
+        html += '<tr><td><strong>' + i.keyword + '</strong></td>';
+        html += '<td><span class="marketplace ' + mktClass + '">' + i.marketplace.toUpperCase() + '</span></td>';
+        html += '<td><span class="band band-' + i.band + '">' + i.band + '</span></td>';
+        html += '<td>' + str + '%</td>';
+        html += '<td>€' + (i.avg_price||0).toFixed(0) + '</td><td>' + (i.active||0) + '</td><td>' + (i.sold||0) + '</td>';
+        html += '<td>' + cost + '</td><td>' + margin + '</td><td class="' + roiClass + '">' + roi + '</td></tr>';
+      });
+      html += '</tbody></table></div>';
+    });
+
+    html += '</div></div>';
+  });
+
+  container.innerHTML = html;
 }
 
 function toggleGroup(i) {
   const body = document.getElementById('body-' + i);
+  const header = body.previousElementSibling;
   body.classList.toggle('open');
+  header.classList.toggle('open');
 }
 
 function toggleAll() {
   allExpanded = !allExpanded;
-  document.querySelectorAll('.brand-body').forEach(b => {
-    if (allExpanded) b.classList.add('open');
-    else b.classList.remove('open');
+  document.querySelectorAll('.cat-body').forEach(b => {
+    if (allExpanded) { b.classList.add('open'); b.previousElementSibling.classList.add('open'); }
+    else { b.classList.remove('open'); b.previousElementSibling.classList.remove('open'); }
   });
   document.getElementById('btn-toggle').textContent = allExpanded ? '▼ Collapse All' : '▼ Expand All';
 }
@@ -251,20 +291,20 @@ function filter(band) {
   else if (band === 'COLD') btn.className = 'active-cold';
   currentMarket = document.getElementById('market-filter').value;
   render();
-  if (allExpanded) document.querySelectorAll('.brand-body').forEach(b => b.classList.add('open'));
+  if (allExpanded) document.querySelectorAll('.cat-body').forEach(b => { b.classList.add('open'); b.previousElementSibling.classList.add('open'); });
 }
 
 function applyFilters() {
   currentMarket = document.getElementById('market-filter').value;
   render();
-  if (allExpanded) document.querySelectorAll('.brand-body').forEach(b => b.classList.add('open'));
+  if (allExpanded) document.querySelectorAll('.cat-body').forEach(b => { b.classList.add('open'); b.previousElementSibling.classList.add('open'); });
 }
 
 function sortBy(field) {
   if (currentSort.field === field) currentSort.dir = currentSort.dir === 'desc' ? 'asc' : 'desc';
   else { currentSort.field = field; currentSort.dir = 'desc'; }
   render();
-  if (allExpanded) document.querySelectorAll('.brand-body').forEach(b => b.classList.add('open'));
+  if (allExpanded) document.querySelectorAll('.cat-body').forEach(b => { b.classList.add('open'); b.previousElementSibling.classList.add('open'); });
 }
 
 loadData();
