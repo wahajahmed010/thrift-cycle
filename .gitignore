@@ -1,0 +1,19 @@
+# Thrift-Cycle credentials
+.ebay_credentials
+.ebay_tokens.json
+
+# Debug files
+debug_sold_page.html
+
+# Data files (regenerated daily)
+data/
+*.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
