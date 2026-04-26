@@ -24,14 +24,56 @@ KEYWORDS = [
     "Birkenstock EVA", "Lowa Renegade GTX", "Lowa Camino GTX", "Meindl Bhutan",
     "Meindl Ortler", "Meindl Borneo", "Ortlieb Back-Roller", "Ortlieb Velocity",
     "Jack Wolfskin 3in1 Jacket", "Jack Wolfskin DNA", "Deuter Aircontact 65+10",
-    "Deuter Futura", "Vaude Brenta", "Patagonia Retro-X Fleece", "Patagonia Better Sweater",
-    "Patagonia Nano Puff", "Arc'teryx Beta LT", "Arc'teryx Atom LT", "Arc'teryx Zeta SL",
-    "Vintage Levi's 501", "Levi's 501 Made in USA", "Miu Miu Ballerinas", "Repetto Ballerinas",
-    "Chanel Ballerinas",
-    "Vintage Levi's 501 80s", "Vintage Levi's 501 90s", "Levi's 501 Red Line",
-    "Levi's 501 Shrink-to-Fit", "Patagonia Houdini", "Patagonia Synchilla",
-    "Arc'teryx Alpha SV", "Arc'teryx Gamma MX", "Tory Burch Ballet Flats",
-    "Miu Miu Ballet Flats",
+    # --- Fleek-sourced brands ---
+    # Carhartt (workwear/streetwear)
+    "Carhartt Detroit Jacket", "Carhartt WIP", "Carhartt Shorts", "Carhartt Pants",
+    # The North Face (outdoor/streetwear)
+    "North Face Puffer", "North Face Fleece", "North Face Nuptse", "North Face Windbreaker",
+    # Nike (sportswear)
+    "Nike Air Force 1", "Nike Air Max", "Nike Dunk", "Nike Tech Fleece",
+    # Adidas (sportswear)
+    "Adidas Track Pants", "Adidas Samba", "Adidas Gazelle", "Adidas Stan Smith",
+    # Lululemon (activewear)
+    "Lululemon Leggings", "Lululemon Define Jacket", "Lululemon Scuba Hoodie",
+    # Ralph Lauren (polos/knitwear)
+    "Ralph Lauren Polo", "Ralph Lauren Sweater", "Ralph Lauren Shirt",
+    # Tommy Hilfiger
+    "Tommy Hilfiger Shirt", "Tommy Hilfiger Jacket",
+    # Lacoste
+    "Lacoste Polo",
+    # Champion
+    "Champion Hoodie", "Champion Sweatshirt",
+    # Columbia (outdoor)
+    "Columbia Jacket", "Columbia Shorts",
+    # Converse
+    "Converse Chuck Taylor", "Converse One Star",
+    # New Balance
+    "New Balance 550", "New Balance 574",
+    # UGG
+    "UGG Boots", "UGG Tasman",
+    # Gymshark
+    "Gymshark Leggings", "Gymshark Shorts",
+    # Juicy Couture
+    "Juicy Couture Tracksuit",
+    # Levi's / Vintage Denim
+    "Vintage Levi's 501", "Levi's 501 Made in USA", "Levi's 501 Red Line",
+    "Levi's 501 Shrink-to-Fit", "Vintage Levi's 501 80s", "Vintage Levi's 501 90s",
+    # --- Specialty / Not on Fleek ---
+    # German Outdoor
+    "Birkenstock Arizona", "Birkenstock Boston", "Birkenstock Gizeh", "Birkenstock Madrid",
+    "Birkenstock EVA", "Lowa Renegade GTX", "Lowa Camino GTX", "Meindl Bhutan",
+    "Meindl Ortler", "Meindl Borneo", "Ortlieb Back-Roller", "Ortlieb Velocity",
+    "Jack Wolfskin 3in1 Jacket", "Jack Wolfskin DNA", "Deuter Aircontact 65+10",
+    "Deuter Futura", "Vaude Brenta",
+    # Patagonia
+    "Patagonia Retro-X Fleece", "Patagonia Better Sweater",
+    "Patagonia Nano Puff", "Patagonia Houdini", "Patagonia Synchilla",
+    # Arc'teryx
+    "Arc'teryx Beta LT", "Arc'teryx Atom LT", "Arc'teryx Zeta SL",
+    "Arc'teryx Alpha SV", "Arc'teryx Gamma MX",
+    # Designer Shoes
+    "Chanel Ballerinas", "Miu Miu Ballerinas", "Miu Miu Ballet Flats",
+    "Repetto Ballerinas", "Tory Burch Ballet Flats",
 ]
 
 MARKETPLACES = ["de", "us"]

@@ -1,63 +1,87 @@
 // Fleek-aligned product categories — how resellers actually buy inventory
 const PRODUCT_TYPES = [
   {
-    name: "Hiking & Trekking Boots",
-    emoji: "🥾",
-    fleek_note: "No Fleek category (specialty outdoor — source elsewhere)",
-    keywords: ["Lowa", "Meindl"]
+    name: "Workwear & Streetwear",
+    emoji: "🧱",
+    fleek_note: "Carhartt bundles — Detroit jackets, WIP, shorts, pants",
+    keywords: ["Carhartt"]
   },
   {
-    name: "Outdoor & Trekking Gear",
-    emoji: "🎒",
-    fleek_note: "No Fleek category (specialty outdoor — source elsewhere)",
-    keywords: ["Ortlieb", "Deuter", "Vaude", "Jack Wolfskin"]
-  },
-  {
-    name: "Fleece & Puffer Jackets",
+    name: "Puffer & Fleece Jackets",
     emoji: "🧥",
-    fleek_note: "Fleek: The North Face fleece, Patagonia puffers",
-    keywords: ["Patagonia Retro", "Patagonia Better Sweater", "Patagonia Synchilla", "Patagonia Nano Puff", "Patagonia Houdini", "North Face"]
+    fleek_note: "North Face fleece & puffers, Patagonia Retro-X, Better Sweater",
+    keywords: ["North Face", "Patagonia Retro", "Patagonia Better", "Patagonia Synchilla", "Patagonia Houdini", "Patagonia Nano Puff", "Champion"]
   },
   {
     name: "Rain & Hardshell Jackets",
     emoji: "🌧️",
-    fleek_note: "Fleek: No direct category (specialty — source elsewhere)",
+    fleek_note: "Not on Fleek (specialty — source Arc'teryx elsewhere)",
     keywords: ["Arc'teryx Zeta", "Arc'teryx Beta", "Arc'teryx Alpha", "Arc'teryx Gamma"]
   },
   {
     name: "Insulated & Midlayers",
     emoji: "🧶",
-    fleek_note: "Fleek: Upcycled sweatshirts, Carhartt hoodies",
+    fleek_note: "Arc'teryx Atom, upcycled sweatshirts on Fleek",
     keywords: ["Arc'teryx Atom"]
   },
   {
-    name: "Sandals & Summer Footwear",
-    emoji: "🩴",
-    fleek_note: "No Fleek category (seasonal specialty)",
-    keywords: ["Birkenstock"]
+    name: "Sneakers & Trainers",
+    emoji: "👟",
+    fleek_note: "Nike Air Force, Dunk, Adidas Samba, Gazelle, New Balance 550",
+    keywords: ["Nike", "Adidas", "Converse", "New Balance"]
   },
   {
-    name: "Vintage Denim & Jeans",
-    emoji: "👖",
-    fleek_note: "Fleek: Y2K Bootcut Jeans, Levi's shorts, Miss Me jeans",
-    keywords: ["Levi's", "Vintage Levi's"]
-  },
-  {
-    name: "Designer Shoes & Flats",
-    emoji: "👠",
-    fleek_note: "No Fleek category (luxury — source elsewhere)",
-    keywords: ["Chanel", "Miu Miu", "Repetto", "Tory Burch"]
+    name: "Activewear & Gym Wear",
+    emoji: "🏋️",
+    fleek_note: "Lululemon bundles, Gymshark leggings & shorts",
+    keywords: ["Lululemon", "Gymshark"]
   },
   {
     name: "Polo Shirts & Button-Downs",
     emoji: "👔",
-    fleek_note: "Fleek: Ralph Lauren polos, Tommy Hilfiger shirts, Lacoste",
-    keywords: ["Ralph Lauren", "Tommy Hilfiger"]
+    fleek_note: "Ralph Lauren polos & shirts, Tommy Hilfiger, Lacoste, Columbia",
+    keywords: ["Ralph Lauren", "Tommy Hilfiger", "Lacoste", "Columbia"]
   },
   {
-    name: "Activewear & Leggings",
-    emoji: "🏋️",
-    fleek_note: "Fleek: Lululemon bundles, Gymshark leggings",
-    keywords: ["Lululemon"]
-  }
+    name: "Vintage Denim & Jeans",
+    emoji: "👖",
+    fleek_note: "Levi's 501 bundles, Y2K bootcut jeans, Miss Me on Fleek",
+    keywords: ["Levi's", "Vintage Levi's"]
+  },
+  {
+    name: "UGG & Winter Boots",
+    emoji: "🥾",
+    fleek_note: "UGG Tasman & boots (seasonal on Fleek)",
+    keywords: ["UGG"]
+  },
+  {
+    name: "Tracksuits & Y2K",
+    emoji: "✨",
+    fleek_note: "Juicy Couture tracksuits, Y2K tops & camis",
+    keywords: ["Juicy Couture"]
+  },
+  {
+    name: "Hiking & Trekking Boots",
+    emoji: "⛰️",
+    fleek_note: "Not on Fleek (German specialty — source locally)",
+    keywords: ["Lowa", "Meindl"]
+  },
+  {
+    name: "Outdoor & Trekking Gear",
+    emoji: "🎒",
+    fleek_note: "Not on Fleek (German specialty — source locally)",
+    keywords: ["Ortlieb", "Deuter", "Vaude", "Jack Wolfskin"]
+  },
+  {
+    name: "Sandals & Summer Shoes",
+    emoji: "🩴",
+    fleek_note: "Not on Fleek (seasonal specialty)",
+    keywords: ["Birkenstock"]
+  },
+  {
+    name: "Designer Shoes & Flats",
+    emoji: "👠",
+    fleek_note: "Not on Fleek (luxury — source via consignment)",
+    keywords: ["Chanel", "Miu Miu", "Repetto", "Tory Burch"]
+  },
 ];

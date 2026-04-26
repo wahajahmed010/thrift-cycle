@@ -48,60 +48,151 @@ KEYWORD_TO_CATEGORIES = {
 # Sources: joinfleek.com category pages, manual review
 # Format: {keyword: {min: lowest price/pc, avg: average price/pc, categories: [brand]}}
 FLEEK_PRICES = {
-    # Outdoor/Workwear — highest margins in DE
+    # === Fleek-sourced brands (prices from joinfleek.com) ===
+    
+    # Carhartt (workwear/streetwear)
     "Carhartt Detroit Jacket": {"min": 28, "avg": 36, "categories": ["Carhartt"]},
     "Carhartt WIP": {"min": 13, "avg": 18, "categories": ["Carhartt"]},
     "Carhartt Shorts": {"min": 10, "avg": 14, "categories": ["Carhartt"]},
-    "North Face Fleece": {"min": 17, "avg": 22, "categories": ["North Face"]},
-    "North Face Puffer": {"min": 19, "avg": 25, "categories": ["North Face"]},
-    "Patagonia Nano Puff": {"min": 18, "avg": 24, "categories": ["Patagonia"]},
-    "Patagonia Better Sweater": {"min": 15, "avg": 20, "categories": ["Patagonia"]},
-    "Patagonia Retro-X Fleece": {"min": 16, "avg": 21, "categories": ["Patagonia"]},
-    "Arc'teryx Zeta SL": {"min": 30, "avg": 45, "categories": ["Arc'teryx"]},
-    "Arc'teryx Beta LT": {"min": 35, "avg": 50, "categories": ["Arc'teryx"]},
+    "Carhartt Pants": {"min": 14, "avg": 20, "categories": ["Carhartt"]},
     
-    # Premium Brands
+    # The North Face (outdoor/streetwear)
+    "North Face Puffer": {"min": 19, "avg": 25, "categories": ["North Face"]},
+    "North Face Fleece": {"min": 17, "avg": 22, "categories": ["North Face"]},
+    "North Face Nuptse": {"min": 22, "avg": 30, "categories": ["North Face"]},
+    "North Face Windbreaker": {"min": 12, "avg": 16, "categories": ["North Face"]},
+    
+    # Nike (sportswear)
+    "Nike Air Force 1": {"min": 7, "avg": 12, "categories": ["Nike"]},
+    "Nike Air Max": {"min": 9, "avg": 15, "categories": ["Nike"]},
+    "Nike Dunk": {"min": 8, "avg": 14, "categories": ["Nike"]},
+    "Nike Tech Fleece": {"min": 10, "avg": 15, "categories": ["Nike"]},
+    
+    # Adidas (sportswear)
+    "Adidas Track Pants": {"min": 8, "avg": 14, "categories": ["Adidas"]},
+    "Adidas Samba": {"min": 9, "avg": 15, "categories": ["Adidas"]},
+    "Adidas Gazelle": {"min": 8, "avg": 14, "categories": ["Adidas"]},
+    "Adidas Stan Smith": {"min": 7, "avg": 12, "categories": ["Adidas"]},
+    
+    # Lululemon (activewear)
+    "Lululemon Leggings": {"min": 10, "avg": 14, "categories": ["Lululemon"]},
+    "Lululemon Define Jacket": {"min": 15, "avg": 22, "categories": ["Lululemon"]},
+    "Lululemon Scuba Hoodie": {"min": 14, "avg": 20, "categories": ["Lululemon"]},
+    
+    # Ralph Lauren (polos/knitwear)
     "Ralph Lauren Polo": {"min": 9, "avg": 16, "categories": ["Ralph Lauren"]},
     "Ralph Lauren Shirt": {"min": 13, "avg": 19, "categories": ["Ralph Lauren"]},
     "Ralph Lauren Sweater": {"min": 24, "avg": 29, "categories": ["Ralph Lauren"]},
+    
+    # Tommy Hilfiger
     "Tommy Hilfiger Shirt": {"min": 10, "avg": 14, "categories": ["Tommy Hilfiger"]},
-    "Lululemon Leggings": {"min": 10, "avg": 14, "categories": ["Lululemon"]},
-    "Lululemon Tank Top": {"min": 10, "avg": 12, "categories": ["Lululemon"]},
+    "Tommy Hilfiger Jacket": {"min": 12, "avg": 18, "categories": ["Tommy Hilfiger"]},
+    
+    # Lacoste
     "Lacoste Polo": {"min": 17, "avg": 18, "categories": ["Lacoste"]},
     
-    # Denim
-    "Levi's 501": {"min": 10, "avg": 13, "categories": ["Levi's"]},
-    "Levi's Shorts": {"min": 10, "avg": 13, "categories": ["Levi's"]},
+    # Champion
+    "Champion Hoodie": {"min": 7, "avg": 11, "categories": ["Champion"]},
+    "Champion Sweatshirt": {"min": 6, "avg": 10, "categories": ["Champion"]},
     
-    # Y2K / Trend
-    "Y2K Baby Tee": {"min": 7, "avg": 10, "categories": ["Y2K"]},
-    "Y2K Camisole": {"min": 11, "avg": 14, "categories": ["Y2K"]},
+    # Columbia (outdoor)
+    "Columbia Jacket": {"min": 9, "avg": 14, "categories": ["Columbia"]},
+    "Columbia Shorts": {"min": 5, "avg": 9, "categories": ["Columbia"]},
     
-    # Sportswear
-    "Nike Air Force": {"min": 7, "avg": 12, "categories": ["Nike"]},
-    "Adidas Track Pants": {"min": 10, "avg": 14, "categories": ["Adidas"]},
+    # Converse
+    "Converse Chuck Taylor": {"min": 6, "avg": 10, "categories": ["Converse"]},
+    "Converse One Star": {"min": 7, "avg": 12, "categories": ["Converse"]},
+    
+    # New Balance
+    "New Balance 550": {"min": 8, "avg": 14, "categories": ["New Balance"]},
+    "New Balance 574": {"min": 7, "avg": 12, "categories": ["New Balance"]},
+    
+    # UGG
+    "UGG Boots": {"min": 15, "avg": 22, "categories": ["UGG"]},
+    "UGG Tasman": {"min": 12, "avg": 18, "categories": ["UGG"]},
+    
+    # Gymshark
     "Gymshark Leggings": {"min": 8, "avg": 10, "categories": ["Gymshark"]},
+    "Gymshark Shorts": {"min": 5, "avg": 8, "categories": ["Gymshark"]},
     
-    # Luxury / Accessories
+    # Juicy Couture
+    "Juicy Couture Tracksuit": {"min": 14, "avg": 22, "categories": ["Juicy Couture"]},
+    
+    # Levi's / Vintage Denim
+    "Levi's 501 Made in USA": {"min": 10, "avg": 13, "categories": ["Levi's"]},
+    "Levi's 501 Red Line": {"min": 10, "avg": 13, "categories": ["Levi's"]},
+    "Levi's 501 Shrink-to-Fit": {"min": 10, "avg": 13, "categories": ["Levi's"]},
+    "Vintage Levi's 501": {"min": 10, "avg": 13, "categories": ["Levi's"]},
+    "Vintage Levi's 501 80s": {"min": 10, "avg": 13, "categories": ["Levi's"]},
+    "Vintage Levi's 501 90s": {"min": 10, "avg": 13, "categories": ["Levi's"]},
+    
+    # === Specialty / Not on Fleek ===
+    
+    # German Outdoor
+    "Birkenstock Arizona": {"min": 12, "avg": 18, "categories": ["Birkenstock"]},
+    "Birkenstock Boston": {"min": 12, "avg": 18, "categories": ["Birkenstock"]},
+    "Birkenstock Gizeh": {"min": 12, "avg": 18, "categories": ["Birkenstock"]},
+    "Birkenstock Madrid": {"min": 12, "avg": 18, "categories": ["Birkenstock"]},
+    "Birkenstock EVA": {"min": 12, "avg": 18, "categories": ["Birkenstock"]},
+    "Lowa Renegade GTX": {"min": 15, "avg": 22, "categories": ["Lowa"]},
+    "Lowa Camino GTX": {"min": 15, "avg": 22, "categories": ["Lowa"]},
+    "Meindl Bhutan": {"min": 15, "avg": 25, "categories": ["Meindl"]},
+    "Meindl Ortler": {"min": 15, "avg": 25, "categories": ["Meindl"]},
+    "Meindl Borneo": {"min": 15, "avg": 25, "categories": ["Meindl"]},
+    "Ortlieb Back-Roller": {"min": 12, "avg": 18, "categories": ["Ortlieb"]},
+    "Ortlieb Velocity": {"min": 12, "avg": 18, "categories": ["Ortlieb"]},
+    "Jack Wolfskin 3in1 Jacket": {"min": 10, "avg": 15, "categories": ["Jack Wolfskin"]},
+    "Jack Wolfskin DNA": {"min": 10, "avg": 15, "categories": ["Jack Wolfskin"]},
+    "Deuter Aircontact 65+10": {"min": 12, "avg": 18, "categories": ["Deuter"]},
+    "Deuter Futura": {"min": 12, "avg": 18, "categories": ["Deuter"]},
+    "Vaude Brenta": {"min": 10, "avg": 15, "categories": ["Vaude"]},
+    
+    # Patagonia
+    "Patagonia Retro-X Fleece": {"min": 16, "avg": 21, "categories": ["Patagonia"]},
+    "Patagonia Better Sweater": {"min": 15, "avg": 20, "categories": ["Patagonia"]},
+    "Patagonia Nano Puff": {"min": 18, "avg": 24, "categories": ["Patagonia"]},
+    "Patagonia Houdini": {"min": 15, "avg": 20, "categories": ["Patagonia"]},
+    "Patagonia Synchilla": {"min": 16, "avg": 21, "categories": ["Patagonia"]},
+    
+    # Arc'teryx (luxury specialty)
+    "Arc'teryx Zeta SL": {"min": 30, "avg": 45, "categories": ["Arc'teryx"]},
+    "Arc'teryx Beta LT": {"min": 35, "avg": 50, "categories": ["Arc'teryx"]},
+    "Arc'teryx Atom LT": {"min": 30, "avg": 47, "categories": ["Arc'teryx"]},
+    "Arc'teryx Alpha SV": {"min": 30, "avg": 47, "categories": ["Arc'teryx"]},
+    "Arc'teryx Gamma MX": {"min": 30, "avg": 47, "categories": ["Arc'teryx"]},
+    
+    # Designer Shoes (luxury resale)
+    "Chanel Ballerinas": {"min": 25, "avg": 40, "categories": ["Chanel"]},
+    "Miu Miu Ballerinas": {"min": 20, "avg": 35, "categories": ["Miu Miu"]},
+    "Miu Miu Ballet Flats": {"min": 20, "avg": 35, "categories": ["Miu Miu"]},
+    "Repetto Ballerinas": {"min": 15, "avg": 25, "categories": ["Repetto"]},
+    "Tory Burch Ballet Flats": {"min": 15, "avg": 22, "categories": ["Tory Burch"]},
+    
+    # Burberry
     "Burberry Scarf": {"min": 20, "avg": 30, "categories": ["Burberry"]},
 }
 
 # Brand-level fallback (for keywords not in the detailed map)
 BRAND_PRICES = {
     "Carhartt": {"min": 10, "avg": 20},
-    "North Face": {"min": 17, "avg": 22},
+    "North Face": {"min": 12, "avg": 22},
     "Patagonia": {"min": 15, "avg": 22},
     "Arc'teryx": {"min": 30, "avg": 47},
     "Ralph Lauren": {"min": 9, "avg": 18},
     "Tommy Hilfiger": {"min": 10, "avg": 14},
-    "Lululemon": {"min": 10, "avg": 13},
+    "Lululemon": {"min": 10, "avg": 15},
     "Levi's": {"min": 10, "avg": 13},
-    "Y2K": {"min": 7, "avg": 12},
-    "Nike": {"min": 7, "avg": 12},
-    "Adidas": {"min": 10, "avg": 14},
-    "Gymshark": {"min": 8, "avg": 10},
-    "Burberry": {"min": 20, "avg": 30},
+    "Nike": {"min": 7, "avg": 13},
+    "Adidas": {"min": 7, "avg": 13},
+    "Gymshark": {"min": 5, "avg": 9},
+    "Champion": {"min": 6, "avg": 10},
+    "Columbia": {"min": 5, "avg": 11},
+    "Converse": {"min": 6, "avg": 10},
+    "New Balance": {"min": 7, "avg": 13},
+    "UGG": {"min": 12, "avg": 20},
+    "Juicy Couture": {"min": 14, "avg": 22},
     "Lacoste": {"min": 17, "avg": 18},
+    "Burberry": {"min": 20, "avg": 30},
     "Birkenstock": {"min": 12, "avg": 18},
     "Lowa": {"min": 15, "avg": 22},
     "Meindl": {"min": 15, "avg": 25},
