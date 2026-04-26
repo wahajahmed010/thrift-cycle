@@ -23,16 +23,18 @@ header p{color:#888;margin-top:8px;font-size:.95rem}
 .filters button.active-warm{background:#3a2a0a;color:#f7c948;border-color:#f7c948}
 .filters button.active-cold{background:#0a1a3a;color:#4a9eff;border-color:#4a9eff}
 .filters select{background:#1a1a2e;border:1px solid #2a2a3e;color:#ccc;padding:8px 12px;border-radius:8px;font-size:.85rem}
-.cat-group{margin-bottom:28px}
-.cat-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:linear-gradient(135deg,#16162a,#1a1a2e);border:1px solid #252540;border-radius:12px 12px 0 0;cursor:pointer;user-select:none}
+.cat-group{margin-bottom:24px;border:1px solid #1e1e2e;border-radius:12px;overflow:hidden}
+.cat-header{padding:16px 18px;background:linear-gradient(135deg,#16162a,#1a1a2e);cursor:pointer;user-select:none}
 .cat-header:hover{background:linear-gradient(135deg,#1a1a30,#1e1e35)}
-.cat-header.open{border-radius:12px 12px 0 0;border-bottom:none}
-.cat-name{font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:10px}
+.cat-name{font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:10px}
 .cat-name .emoji{font-size:1.4rem}
-.cat-stats{display:flex;gap:16px;font-size:.82rem;color:#aaa}
+.fleek-note{font-size:.78rem;color:#888;margin-top:6px;line-height:1.4}
+.fleek-note .yes{color:#2ecc71}.fleek-note .no{color:#e74c3c}
+.cat-stats{display:flex;gap:16px;font-size:.82rem;color:#aaa;margin-top:8px}
 .cat-stats .best{color:#2ecc71;font-weight:600}
-.brand-section{border-left:1px solid #1e1e2e;border-right:1px solid #1e1e2e}
-.brand-label{padding:8px 18px;background:#0f0f1a;font-size:.8rem;font-weight:600;color:#f7c948;border-bottom:1px solid #1a1a28;letter-spacing:.03em}
+.brand-row{padding:6px 18px;background:#0f0f1a;font-size:.78rem;color:#f7c948;font-weight:600;letter-spacing:.03em;border-bottom:1px solid #1a1a28}
+.cat-body{display:none}
+.cat-body.open{display:block}
 table{width:100%;border-collapse:collapse;font-size:.82rem}
 thead th{position:sticky;top:0;background:#0d0d18;padding:10px 8px;text-align:left;color:#888;font-weight:600;text-transform:uppercase;font-size:.7rem;letter-spacing:.05em;border-bottom:1px solid #1e1e2e;cursor:pointer}
 thead th:hover{color:#fff}
@@ -41,15 +43,14 @@ tbody tr:hover{background:#14142a}
 tbody td{padding:8px}
 .band{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.72rem;font-weight:600}
 .band-HOT{background:#3a1a0a;color:#ff6b35}.band-WARM{background:#3a2a0a;color:#f7c948}.band-COLD{background:#0a1a3a;color:#4a9eff}
-.trend{font-size:1rem}.trend-up{color:#2ecc71}.trend-down{color:#e74c3c}.trend-flat{color:#888}
 .roi-good{color:#2ecc71;font-weight:600}.roi-mid{color:#f7c948}.roi-low{color:#888}
 .marketplace{font-size:.72rem;padding:2px 6px;border-radius:3px;background:#1a1a2e;color:#aaa}
 .marketplace-de{border-left:2px solid #ff6b35}.marketplace-us{border-left:2px solid #4a9eff}
-.cat-body{display:none;border:1px solid #1e1e2e;border-top:none;border-radius:0 0 12px 12px;overflow:hidden}
-.cat-body.open{display:block}
+.source-tag{font-size:.65rem;padding:1px 6px;border-radius:3px;font-weight:600}
+.source-fleek{background:#1a3a1a;color:#2ecc71;border:1px solid #2a5a2a}
+.source-none{background:#1a1a1a;color:#666;border:1px solid #333}
 footer{text-align:center;padding:40px 0 20px;color:#555;font-size:.8rem}
 footer a{color:#888;text-decoration:none}footer a:hover{color:#fff}
-.empty{text-align:center;padding:60px;color:#555}
 @media(max-width:768px){.container{padding:10px}header h1{font-size:1.5rem}table{font-size:.72rem}thead th,tbody td{padding:5px 3px}.stats-row{grid-template-columns:repeat(2,1fr)}.cat-stats{flex-direction:column;gap:4px}}
 </style>
 </head>
@@ -57,7 +58,7 @@ footer a{color:#888;text-decoration:none}footer a:hover{color:#fff}
 <div class="container">
   <header>
     <h1>🦌 Thrift-Cycle Predictor</h1>
-    <p>eBay DE + US resale intelligence — sell-through rates, Fleek margins &amp; trends</p>
+    <p>eBay DE + US resale intelligence — Fleek sourcing + sell-through rates</p>
     <p id="date"></p>
   </header>
   <div class="stats-row" id="stats"></div>
@@ -75,12 +76,12 @@ footer a{color:#888;text-decoration:none}footer a:hover{color:#fff}
     <button onclick="toggleAll()" id="btn-toggle">▼ Expand All</button>
   </div>
   <div id="groups"></div>
-  <div class="empty" id="empty" style="display:none">No data yet.</div>
   <footer>
     <p>Thrift-Cycle Predictor — <a href="https://github.com/wahajahmed010/thrift-cycle">GitHub</a></p>
-    <p>Data: eBay Browse API + Fleek wholesale pricing | Updated daily</p>
+    <p>Data: eBay Browse API + Fleek wholesale | Buy on <a href="https://www.joinfleek.com">Fleek</a>, sell on eBay</p>
   </footer>
 </div>
+<script src="product_types.js"></script>
 <script src="data.js"></script>
 <script>
 let DATA = [];
@@ -89,61 +90,29 @@ let currentMarket = 'all';
 let currentSort = { field: 'roi', dir: 'desc' };
 let allExpanded = false;
 
-// Product-type groups (like Fleek categories), then brands inside
-const PRODUCT_TYPES = [
-  { name: "Hiking Boots", emoji: "🥾", brands: ["Lowa", "Meindl"] },
-  { name: "Outdoor Gear", emoji: "🎒", brands: ["Ortlieb", "Deuter", "Vaude", "Jack Wolfskin"] },
-  { name: "Fleece & Sweaters", emoji: "🧥", brands: ["Patagonia"] },
-  { name: "Rain & Hardshell Jackets", emoji: "🌧️", brands: ["Arc'teryx"] },
-  { name: "Sandals & Summer Shoes", emoji: "🩴", brands: ["Birkenstock"] },
-  { name: "Denim & Vintage Jeans", emoji: "👖", brands: ["Levi's"] },
-  { name: "Designer Flats & Heels", emoji: "👠", brands: ["Chanel", "Miu Miu", "Repetto", "Tory Burch"] },
-  { name: "Polo & Button-Down Shirts", emoji: "👔", brands: ["Ralph Lauren", "Tommy Hilfiger"] },
-  { name: "Activewear & Leggings", emoji: "🏋️", brands: ["Lululemon"] },
-];
-
-// Map keywords to product types
-function getProductType(keyword) {
-  for (const pt of PRODUCT_TYPES) {
-    if (pt.brands.some(b => keyword.includes(b))) {
-      // Refine Patagonia into Fleece vs other
-      if (keyword.includes("Patagonia")) {
-        if (keyword.includes("Retro-X") || keyword.includes("Better Sweater") || keyword.includes("Synchilla")) return "Fleece & Sweaters";
-        return "Outdoor Jackets & Vests";
-      }
-      // Refine Arc'teryx into Rain vs Insulated
-      if (keyword.includes("Arc")) {
-        if (keyword.includes("Atom") || keyword.includes("Gamma")) return "Insulated & Softshell";
-        return "Rain & Hardshell Jackets";
-      }
-      // Refine Levi's
-      if (keyword.includes("Levi") || keyword.includes("Vintage Levi")) return "Denim & Vintage Jeans";
-      return pt.name;
-    }
-  }
-  return "Other";
-}
-
-function getBrand(keyword) {
-  const brands = ["Birkenstock","Lowa","Meindl","Ortlieb","Deuter","Vaude","Jack Wolfskin",
-    "Patagonia","Arc'teryx","Levi's","Vintage Levi's","Chanel","Miu Miu","Repetto","Tory Burch",
-    "Ralph Lauren","Tommy Hilfiger","Lululemon"];
-  for (const b of brands) {
-    if (keyword.includes(b)) return b;
-  }
-  return "Other";
-}
-
 function loadData() {
   if (typeof PIPELINE_DATA !== 'undefined') {
     DATA = PIPELINE_DATA.results || [];
     document.getElementById('date').textContent = 'Updated: ' + PIPELINE_DATA.date;
   }
-  if (DATA.length === 0) { document.getElementById('empty').style.display = 'block'; return; }
+  if (DATA.length === 0) { document.getElementById('groups').innerHTML = '<p style="text-align:center;color:#555;padding:60px">No data yet.</p>'; return; }
   render();
 }
 
-function getStr(item) { return item.active > 0 ? (item.sold / (item.sold + item.active) * 100) : 0; }
+function matchType(keyword) {
+  for (const pt of PRODUCT_TYPES) {
+    if (pt.keywords.some(k => keyword.includes(k))) return pt;
+  }
+  return { name: "Other", emoji: "📦", fleek_note: "No Fleek category", keywords: [] };
+}
+
+function getBrand(keyword) {
+  const brands = ["Birkenstock","Lowa","Meindl","Ortlieb","Deuter","Vaude","Jack Wolfskin","Patagonia","Arc'teryx","Levi's","Vintage Levi's","Chanel","Miu Miu","Repetto","Tory Burch","Ralph Lauren","Tommy Hilfiger","Lululemon"];
+  for (const b of brands) { if (keyword.includes(b)) return b; }
+  return "Other";
+}
+
+function getStr(i) { return i.active > 0 ? (i.sold / (i.sold + i.active) * 100) : 0; }
 
 function getSortValue(item, field) {
   switch(field) {
@@ -155,16 +124,13 @@ function getSortValue(item, field) {
     case 'active': return item.active || 0;
     case 'sold': return item.sold || 0;
     case 'fleek_cost': return item.fleek_cost || 0;
-    case 'keyword': return item.keyword || '';
     default: return 0;
   }
 }
 
 function sortItems(items) {
   return [...items].sort((a, b) => {
-    const va = getSortValue(a, currentSort.field);
-    const vb = getSortValue(b, currentSort.field);
-    if (typeof va === 'string') return currentSort.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    const va = getSortValue(a, currentSort.field), vb = getSortValue(b, currentSort.field);
     return currentSort.dir === 'desc' ? vb - va : va - vb;
   });
 }
@@ -176,14 +142,14 @@ function renderStats() {
   const warm = DATA.filter(i => i.band === 'WARM').length;
   const cold = DATA.filter(i => i.band === 'COLD').length;
   const withMargin = DATA.filter(i => i.margin && i.margin > 0).length;
-  const bestItem = DATA.reduce((best, i) => (i.roi || 0) > (best.roi || 0) ? i : best, DATA[0]);
-  const avgSTR = DATA.reduce((sum, i) => sum + getStr(i), 0) / DATA.length;
+  const onFleek = DATA.filter(i => i.fleek_source && i.fleek_source !== 'fleek_none').length;
+  const avgSTR = DATA.reduce((s, i) => s + getStr(i), 0) / DATA.length;
   document.getElementById('stats').innerHTML =
     '<div class="stat-card hot"><div class="value">' + hot + '</div><div class="label">🔥 Hot</div></div>' +
     '<div class="stat-card warm"><div class="value">' + warm + '</div><div class="label">🌡️ Warm</div></div>' +
     '<div class="stat-card cold"><div class="value">' + cold + '</div><div class="label">❄️ Cold</div></div>' +
     '<div class="stat-card"><div class="value">' + DATA.length + '</div><div class="label">Items</div></div>' +
-    '<div class="stat-card margin-color"><div class="value">' + withMargin + '</div><div class="label">💰 Margins</div></div>' +
+    '<div class="stat-card margin-color"><div class="value">' + onFleek + '</div><div class="label">🛒 On Fleek</div></div>' +
     '<div class="stat-card"><div class="value">' + avgSTR.toFixed(1) + '%</div><div class="label">Avg STR</div></div>';
 }
 
@@ -192,39 +158,35 @@ function renderGroups() {
   if (currentFilter !== 'all') filtered = filtered.filter(i => i.band === currentFilter);
   if (currentMarket !== 'all') filtered = filtered.filter(i => i.marketplace === currentMarket);
 
-  // Group by product type, then by brand
-  const typeGroups = {};
-  const typeOrder = ["Hiking Boots","Outdoor Gear","Outdoor Jackets & Vests","Fleece & Sweaters",
-    "Rain & Hardshell Jackets","Insulated & Softshell","Sandals & Summer Shoes","Denim & Vintage Jeans",
-    "Designer Flats & Heels","Polo & Button-Down Shirts","Activewear & Leggings","Other"];
-  const typeEmojis = {"Hiking Boots":"🥾","Outdoor Gear":"🎒","Outdoor Jackets & Vests":"🧥","Fleece & Sweaters":"🧶",
-    "Rain & Hardshell Jackets":"🌧️","Insulated & Softshell":"🧥","Sandals & Summer Shoes":"🩴",
-    "Denim & Vintage Jeans":"👖","Designer Flats & Heels":"👠","Polo & Button-Down Shirts":"👔",
-    "Activewear & Leggings":"🏋️","Other":"📦"};
-
+  // Group by product type
+  const typeMap = {};
+  const typeOrder = PRODUCT_TYPES.map(pt => pt.name);
   filtered.forEach(item => {
-    const pt = getProductType(item.keyword);
+    const pt = matchType(item.keyword);
+    if (!typeMap[pt.name]) typeMap[pt.name] = { type: pt, brands: {} };
     const brand = getBrand(item.keyword);
-    if (!typeGroups[pt]) typeGroups[pt] = {};
-    if (!typeGroups[pt][brand]) typeGroups[pt][brand] = [];
-    typeGroups[pt][brand].push(item);
+    if (!typeMap[pt.name].brands[brand]) typeMap[pt.name].brands[brand] = [];
+    typeMap[pt.name].brands[brand].push(item);
   });
 
   const container = document.getElementById('groups');
   let html = '';
-  const orderedTypes = typeOrder.filter(t => typeGroups[t]);
+  const orderedTypes = [...typeOrder, "Other"].filter(t => typeMap[t]);
 
-  orderedTypes.forEach((type, ti) => {
-    const brands = typeGroups[type];
-    const allItems = Object.values(brands).flat();
+  orderedTypes.forEach((typeName, ti) => {
+    const group = typeMap[typeName];
+    if (!group) return;
+    const allItems = Object.values(group.brands).flat();
     const bestRoi = allItems.filter(i => i.roi > 0).reduce((b, i) => i.roi > b.roi ? i : b, allItems[0]);
     const avgStr = allItems.reduce((s, i) => s + getStr(i), 0) / allItems.length;
     const avgMargin = allItems.filter(i => i.margin > 0).reduce((s, i) => s + i.margin, 0) / Math.max(1, allItems.filter(i => i.margin > 0).length);
-    const emoji = typeEmojis[type] || '📦';
+    const onFleek = allItems.some(i => i.fleek_source && i.fleek_source !== 'fleek_none');
+    const hasFleek = group.type.fleek_note.includes('Fleek:');
 
     html += '<div class="cat-group">';
     html += '<div class="cat-header" onclick="toggleGroup(' + ti + ')">';
-    html += '<div class="cat-name"><span class="emoji">' + emoji + '</span>' + type + ' <span style="color:#555;font-size:.8rem">(' + allItems.length + ')</span></div>';
+    html += '<div><div class="cat-name"><span class="emoji">' + group.type.emoji + '</span>' + typeName + ' <span style="color:#555;font-size:.8rem">(' + allItems.length + ')</span></div>';
+    html += '<div class="fleek-note">' + (hasFleek ? '<span class="yes">🛒 Source on Fleek</span> — ' + group.type.fleek_note.replace('Fleek: ', '') : '<span class="no">⚠️ Not on Fleek</span> — ' + group.type.fleek_note.replace('No Fleek category', 'Source elsewhere')) + '</div></div>';
     html += '<div class="cat-stats">';
     html += '<span>STR ' + avgStr.toFixed(1) + '%</span>';
     if (avgMargin > 0) html += '<span>€' + Math.round(avgMargin) + ' avg margin</span>';
@@ -232,15 +194,14 @@ function renderGroups() {
     html += '</div></div>';
     html += '<div class="cat-body" id="body-' + ti + '">';
 
-    const sortedBrands = Object.keys(brands).sort();
+    const sortedBrands = Object.keys(group.brands).sort();
     sortedBrands.forEach(brand => {
-      const items = sortItems(brands[brand]);
-      html += '<div class="brand-section">';
-      html += '<div class="brand-label">' + brand + '</div>';
+      const items = sortItems(group.brands[brand]);
+      html += '<div class="brand-row">' + brand + '</div>';
       html += '<table><thead><tr>';
       html += '<th>Item</th><th>Mkt</th><th>Band</th><th onclick="sortBy(\'str\')">STR</th>';
-      html += '<th onclick="sortBy(\'avg_price\')">Sold</th><th>Active</th><th>Sold</th>';
-      html += '<th onclick="sortBy(\'fleek_cost\')">Cost</th><th onclick="sortBy(\'margin\')">Margin</th><th onclick="sortBy(\'roi\')">ROI</th>';
+      html += '<th onclick="sortBy(\'avg_price\')">Avg Sold</th><th>Active</th><th>Sold</th>';
+      html += '<th onclick="sortBy(\'fleek_cost\')">Cost</th><th onclick="sortBy(\'margin\')">Margin</th><th onclick="sortBy(\'roi\')">ROI</th><th>Source</th>';
       html += '</tr></thead><tbody>';
       items.forEach(i => {
         const str = getStr(i).toFixed(1);
@@ -249,14 +210,17 @@ function renderGroups() {
         const cost = i.fleek_cost ? '$' + i.fleek_cost.toFixed(0) : '—';
         const margin = i.margin ? '€' + i.margin.toFixed(0) : '—';
         const roi = i.roi ? i.roi.toFixed(0) + '%' : '—';
+        const sourceClass = (i.fleek_source && i.fleek_source !== 'fleek_none') ? 'source-fleek' : 'source-none';
+        const sourceLabel = (i.fleek_source && i.fleek_source !== 'fleek_none') ? 'Fleek' : 'Other';
         html += '<tr><td><strong>' + i.keyword + '</strong></td>';
         html += '<td><span class="marketplace ' + mktClass + '">' + i.marketplace.toUpperCase() + '</span></td>';
         html += '<td><span class="band band-' + i.band + '">' + i.band + '</span></td>';
         html += '<td>' + str + '%</td>';
         html += '<td>€' + (i.avg_price||0).toFixed(0) + '</td><td>' + (i.active||0) + '</td><td>' + (i.sold||0) + '</td>';
-        html += '<td>' + cost + '</td><td>' + margin + '</td><td class="' + roiClass + '">' + roi + '</td></tr>';
+        html += '<td>' + cost + '</td><td>' + margin + '</td><td class="' + roiClass + '">' + roi + '</td>';
+        html += '<td><span class="source-tag ' + sourceClass + '">' + sourceLabel + '</span></td></tr>';
       });
-      html += '</tbody></table></div>';
+      html += '</tbody></table>';
     });
 
     html += '</div></div>';
@@ -267,17 +231,12 @@ function renderGroups() {
 
 function toggleGroup(i) {
   const body = document.getElementById('body-' + i);
-  const header = body.previousElementSibling;
   body.classList.toggle('open');
-  header.classList.toggle('open');
 }
 
 function toggleAll() {
   allExpanded = !allExpanded;
-  document.querySelectorAll('.cat-body').forEach(b => {
-    if (allExpanded) { b.classList.add('open'); b.previousElementSibling.classList.add('open'); }
-    else { b.classList.remove('open'); b.previousElementSibling.classList.remove('open'); }
-  });
+  document.querySelectorAll('.cat-body').forEach(b => allExpanded ? b.classList.add('open') : b.classList.remove('open'));
   document.getElementById('btn-toggle').textContent = allExpanded ? '▼ Collapse All' : '▼ Expand All';
 }
 
@@ -291,20 +250,20 @@ function filter(band) {
   else if (band === 'COLD') btn.className = 'active-cold';
   currentMarket = document.getElementById('market-filter').value;
   render();
-  if (allExpanded) document.querySelectorAll('.cat-body').forEach(b => { b.classList.add('open'); b.previousElementSibling.classList.add('open'); });
+  if (allExpanded) document.querySelectorAll('.cat-body').forEach(b => b.classList.add('open'));
 }
 
 function applyFilters() {
   currentMarket = document.getElementById('market-filter').value;
   render();
-  if (allExpanded) document.querySelectorAll('.cat-body').forEach(b => { b.classList.add('open'); b.previousElementSibling.classList.add('open'); });
+  if (allExpanded) document.querySelectorAll('.cat-body').forEach(b => b.classList.add('open'));
 }
 
 function sortBy(field) {
   if (currentSort.field === field) currentSort.dir = currentSort.dir === 'desc' ? 'asc' : 'desc';
   else { currentSort.field = field; currentSort.dir = 'desc'; }
   render();
-  if (allExpanded) document.querySelectorAll('.cat-body').forEach(b => { b.classList.add('open'); b.previousElementSibling.classList.add('open'); });
+  if (allExpanded) document.querySelectorAll('.cat-body').forEach(b => b.classList.add('open'));
 }
 
 loadData();
