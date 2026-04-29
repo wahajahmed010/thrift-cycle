@@ -1,0 +1,46 @@
+{
+  "date": "2026-04-29",
+  "results": [
+    {
+      "keyword": "Birkenstock Arizona",
+      "marketplace": "de",
+      "active": 333,
+      "sold": 0,
+      "avg_price": 0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Patagonia Nano Puff",
+      "marketplace": "de",
+      "active": 105,
+      "sold": 0,
+      "avg_price": 0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Birkenstock Arizona",
+      "marketplace": "us",
+      "active": 10283,
+      "sold": 0,
+      "avg_price": 0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Patagonia Nano Puff",
+      "marketplace": "us",
+      "active": 4393,
+      "sold": 0,
+      "avg_price": 0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    }
+  ],
+  "errors": []
+}
