@@ -1,242 +1,384 @@
 #!/usr/bin/env python3
-"""eBay Sold Data — Fetches completed/sold listing data for Thrift-Cycle.
-Since the Finding API's findCompletedItems is deprecated (returns 404),
-this module uses the Browse API with SOLD filter and web scraping as fallback.
+"""eBay Finding API — Sold listings data via XML/SOAP REST payload.
+Uses findCompletedItems with SoldItemsOnly filter.
 
-Strategy:
-1. Try Browse API with sold-related filters first
-2. Fall back to scraping eBay's public sold listings page
-3. Cache results to minimize API/scrape calls
+Updated 2026-04-29:
+- Increased rate limit interval (1.0s) to avoid eBay daily rate limits
+- Added exponential backoff retry for rate limit errors (max 3 retries)
+- Fixed silent failure: rate limit errors now propagate properly
 """
 
 import json
 import time
 import urllib.request
+import urllib.error
 import urllib.parse
-import re
-import sys
-import os
+import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 from statistics import mean, median
+import sys
+import os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from ebay_auth import get_token
+from ebay_auth import load_credentials
+from quota_tracker import (
+    increment_calls, get_remaining_calls, is_quota_exceeded,
+    FINDING_DAILY_LIMIT, reset_if_new_day
+)
 
-BROWSE_URL = "https://api.ebay.com/buy/browse/v1/item_summary/search"
-EBAY_SOLD_URL_DE = "https://www.ebay.de/sch/i.html?LH_Sold=1&LH_Complete=1&_nkw="
-EBAY_SOLD_URL_US = "https://www.ebay.com/sch/i.html?LH_Sold=1&LH_Complete=1&_nkw="
+FINDING_URL = "https://svcs.ebay.com/services/search/FindingService/v1"
+APP_ID = load_credentials()[0]
 
-MARKETPLACES = {
-    "de": "EBAY-DE",
-    "us": "EBAY-US",
-}
+GLOBAL_IDS = {"de": "EBAY-DE", "us": "EBAY-US"}
 
-SOLD_URLS = {
-    "de": EBAY_SOLD_URL_DE,
-    "us": EBAY_SOLD_URL_US,
-}
+_last_call_time = 0.0
+# eBay Finding API: ~5 calls/sec max per IP, but ALSO daily limits per App ID
+# We use 1.0s to be safe and avoid the daily quota exhaustion
+_MIN_INTERVAL = 1.0
+_MAX_RETRIES = 3
+_RETRY_DELAY = 2.0  # Initial retry delay in seconds
 
-RATE_LIMIT_DELAY = 0.3
-CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+# Minimum calls to reserve for critical operations
+_MIN_RESERVE = 10
 
-def try_browse_api_sold(keyword, marketplace="EBAY-US", category_id=None, days=30):
-    """Try to get sold data via Browse API.
-    Note: Browse API doesn't natively support sold/completed items.
-    This function attempts various filter combinations.
-    """
-    token = get_token()
+
+def _rate_limit():
+    global _last_call_time
+    elapsed = time.time() - _last_call_time
+    if elapsed < _MIN_INTERVAL:
+        time.sleep(_MIN_INTERVAL - elapsed)
+    _last_call_time = time.time()
+
+
+def _local_name(tag):
+    return tag.split("}")[1] if "}" in tag else tag
+
+
+def _find_first(parent, tag_name):
+    for child in parent:
+        if _local_name(child.tag) == tag_name:
+            return child
+    return None
+
+
+def _findall_children(parent, tag_name):
+    return [c for c in parent if _local_name(c.tag) == tag_name]
+
+
+def _parse_finding_response(xml_bytes):
+    """Parse Finding API XML response."""
+    try:
+        root = ET.fromstring(xml_bytes)
+    except ET.ParseError as e:
+        return [], 0, 0, "Failure", f"XML parse error: {e}"
+
+    ack_elem = _find_first(root, "ack")
+    ack = ack_elem.text if ack_elem is not None else "Unknown"
+
+    # Check for rate limit error specifically
+    if ack != "Success":
+        error_msg = "Unknown error"
+        error_id = None
+        error_domain = None
+        
+        error_msg_elem = _find_first(root, "errorMessage")
+        if error_msg_elem is not None:
+            error_elem = _find_first(error_msg_elem, "error")
+            if error_elem is not None:
+                msg_elem = _find_first(error_elem, "message")
+                if msg_elem is not None:
+                    error_msg = msg_elem.text
+                error_id_elem = _find_first(error_elem, "errorId")
+                if error_id_elem is not None:
+                    error_id = error_id_elem.text
+                domain_elem = _find_first(error_elem, "domain")
+                if domain_elem is not None:
+                    error_domain = domain_elem.text
+        
+        # Rate limit detection
+        is_rate_limit = (
+            error_id == "10001" or 
+            (error_domain and "RateLimiter" in error_domain) or
+            "exceeded the number of times" in (error_msg or "")
+        )
+        
+        if is_rate_limit:
+            return [], 0, 0, "RateLimit", error_msg
+        
+        return [], 0, 0, ack, error_msg
+
+    search_result = _find_first(root, "searchResult")
+    items = []
+    if search_result is not None:
+        for item in _findall_children(search_result, "item"):
+            item_id, title, price, currency = "", "", 0.0, "USD"
+            listing_type, end_time, condition_id, selling_state = "", "", "", ""
+
+            item_id_elem = _find_first(item, "itemId")
+            if item_id_elem is not None:
+                item_id = item_id_elem.text or ""
+            title_elem = _find_first(item, "title")
+            if title_elem is not None:
+                title = title_elem.text or ""
+            selling_status = _find_first(item, "sellingStatus")
+            if selling_status is not None:
+                price_elem = _find_first(selling_status, "currentPrice")
+                if price_elem is not None:
+                    try:
+                        price = float(price_elem.text or 0)
+                    except ValueError:
+                        price = 0.0
+                    currency = price_elem.get("currencyId") or "USD"
+                state_elem = _find_first(selling_status, "sellingState")
+                if state_elem is not None:
+                    selling_state = state_elem.text or ""
+            listing_info = _find_first(item, "listingInfo")
+            if listing_info is not None:
+                type_elem = _find_first(listing_info, "listingType")
+                if type_elem is not None:
+                    listing_type = type_elem.text or ""
+                end_elem = _find_first(listing_info, "endTime")
+                if end_elem is not None:
+                    end_time = end_elem.text or ""
+            condition = _find_first(item, "condition")
+            if condition is not None:
+                cond_id_elem = _find_first(condition, "conditionId")
+                if cond_id_elem is not None:
+                    condition_id = cond_id_elem.text or ""
+
+            items.append({
+                "item_id": item_id, "title": title, "price": price,
+                "currency": currency, "listing_type": listing_type,
+                "end_time": end_time, "condition_id": condition_id,
+                "selling_state": selling_state,
+            })
+
+    pagination = _find_first(root, "paginationOutput")
+    total_entries, total_pages = 0, 0
+    if pagination is not None:
+        total_entries_elem = _find_first(pagination, "totalEntries")
+        if total_entries_elem is not None:
+            try:
+                total_entries = int(total_entries_elem.text or 0)
+            except ValueError:
+                total_entries = 0
+        total_pages_elem = _find_first(pagination, "totalPages")
+        if total_pages_elem is not None:
+            try:
+                total_pages = int(total_pages_elem.text or 0)
+            except ValueError:
+                total_pages = 0
+
+    return items, total_entries, total_pages, ack, None
+
+
+def _call_finding_api(keyword, global_id, days=30, page=1, retry_count=0):
+    """Make a single Finding API call via GET with query params.
     
-    # The Browse API doesn't have a direct "sold" filter, but we can try
-    # condition=USED and check itemEndDate to infer sold status
+    Retries on rate limit errors with exponential backoff.
+    """
+    # Check quota before making call
+    reset_if_new_day()
+    remaining = get_remaining_calls("finding")
+    if remaining <= _MIN_RESERVE:
+        return [], 0, 0, "QuotaExceeded", (
+            f"Daily quota exceeded ({FINDING_DAILY_LIMIT} calls). "
+            f"Used: {get_remaining_calls('finding') + _MIN_RESERVE}"
+        )
+    
+    _rate_limit()
+    increment_calls("finding", 1)
+    end_to = datetime.now(timezone.utc)
+    end_from = end_to - timedelta(days=days)
+
     params = {
-        "q": keyword,
-        "marketplace_ids": marketplace,
-        "limit": "50",
-        "filter": "conditions:{USED}",
-    }
-    if category_id:
-        params["category_ids"] = str(category_id)
-    
-    url = f"{BROWSE_URL}?{urllib.parse.urlencode(params)}"
-    req = urllib.request.Request(url, headers={
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json",
-        "X-EBAY-C-MARKETPLACE-ID": marketplace,
-    })
-    
-    try:
-        with urllib.request.urlopen(req) as resp:
-            data = json.loads(resp.read())
-    except urllib.error.HTTPError as e:
-        return {"sold_count": 0, "prices": [], "error": str(e.code)}
-    
-    # This gives us active used listings, not sold
-    # We need sold data from elsewhere
-    items = data.get("itemSummaries", [])
-    prices = []
-    for item in items:
-        price = item.get("price", {})
-        if price and "value" in price:
-            prices.append(float(price["value"]))
-    
-    return {
-        "sold_count": 0,  # Browse API can't give us this
-        "active_used_count": data.get("total", 0),
-        "prices": prices,
-        "avg_price": round(mean(prices), 2) if prices else 0,
-        "median_price": round(median(prices), 2) if prices else 0,
-        "source": "browse_api_active",
+        "OPERATION-NAME": "findCompletedItems",
+        "SERVICE-VERSION": "1.13.0",
+        "SECURITY-APPNAME": APP_ID,
+        "RESPONSE-DATA-FORMAT": "XML",
+        "REST-PAYLOAD": "",
+        "keywords": keyword,
+        "paginationInput.entriesPerPage": "100",
+        "paginationInput.pageNumber": str(page),
+        "itemFilter(0).name": "SoldItemsOnly",
+        "itemFilter(0).value": "true",
+        "itemFilter(1).name": "Condition",
+        "itemFilter(1).value": "3000",
+        "itemFilter(2).name": "EndTimeFrom",
+        "itemFilter(2).value": end_from.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+        "itemFilter(3).name": "EndTimeTo",
+        "itemFilter(3).value": end_to.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
     }
 
-def scrape_sold_listings(keyword, marketplace="us", days=30):
-    """Scrape sold listings from eBay's public search page.
-    
-    This is the fallback since the API doesn't support sold data.
-    Returns approximate sold count and prices.
-    """
-    base_url = SOLD_URLS.get(marketplace, SOLD_URLS["us"])
-    query = urllib.parse.quote(keyword)
-    url = f"{base_url}{query}&_dcat=0"
-    
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.5",
-    }
-    
-    req = urllib.request.Request(url, headers=headers)
-    
+    url = f"{FINDING_URL}?{urllib.parse.urlencode(params)}"
+    req = urllib.request.Request(url, headers={
+        "Content-Type": "application/json",
+        "X-EBAY-SOA-OPERATION-NAME": "findCompletedItems",
+        "X-EBAY-SOA-SECURITY-APPNAME": APP_ID,
+    })
+
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            html = resp.read().decode("utf-8", errors="replace")
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            xml_bytes = resp.read()
     except urllib.error.HTTPError as e:
-        print(f"  Scrape error ({e.code})", file=sys.stderr)
-        return {"sold_count": 0, "prices": [], "source": "scrape_failed", "error": str(e.code)}
+        body = e.read().decode("utf-8", errors="replace")
+        
+        # Check if it's a rate limit error
+        is_rate_limit = (
+            e.code == 500 and 
+            ("RateLimiter" in body or "exceeded the number of times" in body)
+        )
+        
+        if is_rate_limit and retry_count < _MAX_RETRIES:
+            # Decrement counter since call didn't succeed
+            increment_calls("finding", -1)
+            delay = _RETRY_DELAY * (2 ** retry_count)
+            print(f"  [Finding API] Rate limited, retrying in {delay}s (attempt {retry_count + 1}/{_MAX_RETRIES})...")
+            time.sleep(delay)
+            return _call_finding_api(keyword, global_id, days, page, retry_count + 1)
+        
+        return [], 0, 0, "Failure", f"HTTP {e.code}: {body[:500]}"
     except Exception as e:
-        print(f"  Scrape error: {e}", file=sys.stderr)
-        return {"sold_count": 0, "prices": [], "source": "scrape_failed", "error": str(e)}
+        return [], 0, 0, "Failure", str(e)
+
+    items, entries, pages, ack, error = _parse_finding_response(xml_bytes)
     
-    # Parse total results count
-    # eBay's sold page is JS-rendered — total count is hard to extract from raw HTML.
-    # Try JSON in script tags first, then plain text patterns.
-    # Fallback: estimate from price samples found (each price = 1 sold listing minimum)
-    total_match = re.search(r'"totalItems"\s*:\s*"?(\d+)"?', html)
-    if not total_match:
-        total_match = re.search(r'(\d[\d,.]+)\s*(?:results?|Ergebnisse?|items?|listings?)', html, re.IGNORECASE)
-    sold_count = 0
-    if total_match:
-        try:
-            sold_count = int(total_match.group(1).replace(",", "").replace(".", ""))
-        except ValueError:
-            sold_count = 0
+    # Handle rate limit from parsed response
+    if ack == "RateLimit" and retry_count < _MAX_RETRIES:
+        # Decrement counter since call didn't succeed
+        increment_calls("finding", -1)
+        delay = _RETRY_DELAY * (2 ** retry_count)
+        print(f"  [Finding API] Rate limited (ack), retrying in {delay}s (attempt {retry_count + 1}/{_MAX_RETRIES})...")
+        time.sleep(delay)
+        return _call_finding_api(keyword, global_id, days, page, retry_count + 1)
     
-    # Parse sold prices from listing page
-    # Match currency symbols followed by price amounts
-    usd_or_eur = r'(?:' + re.escape('$') + r'|\u20ac|EUR\s?)'
-    price_pattern = re.findall(usd_or_eur + r'(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2}))', html)
-    prices = []
-    for p in price_pattern[:100]:  # Limit to 100 prices
-        try:
-            price = float(p.replace(",", ".") if marketplace == "de" else p.replace(",", ""))
-            if 1 <= price <= 10000:  # Reasonable price range
-                prices.append(price)
-        except ValueError:
-            continue
-    
-    # Fallback: if we couldn't parse the count but found prices, estimate from sample
-    if sold_count == 0 and len(prices) > 0:
-        sold_count = len(prices)  # Minimum: we found this many sold listings
-        source_note = "estimated_from_samples"
-    else:
-        source_note = "scrape"
-    
+    return items, entries, pages, ack, error
+
+
+def find_completed_items(keyword, marketplace="de", days=30):
+    """Fetch sold listings for a keyword with pagination.
+    Returns dict with items, sold_count, avg_price, min/max, error.
+    """
+    global_id = GLOBAL_IDS.get(marketplace, "EBAY-US")
+    all_items, total_entries = [], 0
+    page, max_pages = 1, 100
+    error = None
+
+    while page <= max_pages:
+        items, entries, pages, ack, call_error = _call_finding_api(keyword, global_id, days, page)
+        if call_error:
+            error = call_error
+            break
+        if page == 1:
+            total_entries = entries
+        all_items.extend(items)
+        if not items or page >= pages or pages == 0:
+            break
+        page += 1
+
+    prices = [item["price"] for item in all_items if item["price"] > 0]
     return {
-        "sold_count": sold_count,
-        "prices": prices,
+        "items": all_items,
+        "sold_count": total_entries,
+        "fetched_count": len(all_items),
         "avg_price": round(mean(prices), 2) if prices else 0,
         "median_price": round(median(prices), 2) if prices else 0,
         "min_price": round(min(prices), 2) if prices else 0,
         "max_price": round(max(prices), 2) if prices else 0,
-        "sample_size": len(prices),
-        "source": source_note,
+        "prices": prices,
+        "error": error,
     }
 
-def get_sold_stats(keyword, marketplace="us", category_id=None, days=30, use_cache=True):
-    """Get sold statistics for a keyword.
+
+def get_sold_stats(keyword, marketplace="de", category_id=None, days=30):
+    """Get comprehensive sold statistics for a keyword."""
+    all_result = find_completed_items(keyword, marketplace, days)
     
-    Strategy:
-    1. Check cache first
-    2. Try Browse API for active used prices
-    3. Scrape sold listings page for count and price data
-    4. Cache results
-    """
-    # Check cache
-    os.makedirs(CACHE_DIR, exist_ok=True)
-    today = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
-    cache_file = os.path.join(CACHE_DIR, f"sold_{marketplace}_{keyword.replace(' ', '_').replace('/', '_')}_{today}.json")
+    # Propagate error from find_completed_items
+    if all_result.get("error"):
+        return {
+            "sold_count": 0,
+            "fetched_count": 0,
+            "avg_price": 0,
+            "median_price": 0,
+            "min_price": 0,
+            "max_price": 0,
+            "prices": [],
+            "items": [],
+            "by_option": {},
+            "error": all_result["error"],
+        }
     
-    if use_cache and os.path.exists(cache_file):
-        with open(cache_file) as f:
-            cached = json.load(f)
-            if cached.get("date") == today:
-                print(f"  (cached) {keyword} ({marketplace})", end=" ", flush=True)
-                return cached
-    
-    mp = MARKETPLACES.get(marketplace, marketplace)
-    
-    # Try scraping sold listings (most reliable source for sold data)
-    print(f"  Scraping sold: '{keyword}' ({mp})...", end=" ", flush=True)
-    result = scrape_sold_listings(keyword, marketplace, days)
-    time.sleep(RATE_LIMIT_DELAY)
-    
-    # Also get active used prices from Browse API for comparison
-    browse_result = try_browse_api_sold(keyword, mp, category_id)
-    result["active_used_count"] = browse_result.get("active_used_count", 0)
-    result["active_used_avg_price"] = browse_result.get("avg_price", 0)
-    
-    result["keyword"] = keyword
-    result["marketplace"] = marketplace
-    result["date"] = today
-    
-    # Cache
-    with open(cache_file, "w") as f:
-        json.dump(result, f, indent=2)
-    
-    print(f"sold={result.get('sold_count', 0)}, avg=${result.get('avg_price', 0)}, src={result.get('source', '?')}")
-    return result
+    bin_items = [
+        item for item in all_result["items"]
+        if item["listing_type"] in ("FixedPrice", "AuctionWithBIN", "StoreInventory")
+    ]
+    auction_items = [item for item in all_result["items"] if item["listing_type"] == "Auction"]
+
+    bin_prices = [i["price"] for i in bin_items if i["price"] > 0]
+    auction_prices = [i["price"] for i in auction_items if i["price"] > 0]
+
+    total_fetched = len(all_result["items"])
+    total_entries = all_result["sold_count"]
+
+    if total_fetched > 0 and total_entries > total_fetched:
+        bin_ratio = len(bin_items) / total_fetched
+        auction_ratio = len(auction_items) / total_fetched
+        bin_count = int(total_entries * bin_ratio)
+        auction_count = int(total_entries * auction_ratio)
+    else:
+        bin_count = len(bin_items)
+        auction_count = len(auction_items)
+
+    def _stats(prices, count):
+        return {
+            "sold_count": count,
+            "avg_price": round(mean(prices), 2) if prices else 0,
+            "median_price": round(median(prices), 2) if prices else 0,
+            "min_price": round(min(prices), 2) if prices else 0,
+            "max_price": round(max(prices), 2) if prices else 0,
+            "prices": prices,
+        }
+
+    return {
+        "sold_count": total_entries,
+        "fetched_count": total_fetched,
+        "avg_price": all_result["avg_price"],
+        "median_price": all_result["median_price"],
+        "min_price": all_result["min_price"],
+        "max_price": all_result["max_price"],
+        "prices": all_result["prices"],
+        "items": all_result["items"],
+        "by_option": {
+            "FIXED_PRICE": _stats(bin_prices, bin_count),
+            "AUCTION": _stats(auction_prices, auction_count),
+        },
+        "error": None,
+    }
+
 
 def batch_sold_stats(keywords, category_map=None, marketplaces=("de", "us"), days=30):
     """Calculate sold stats for multiple keywords across marketplaces."""
     results = {}
-    
     for keyword in keywords:
         results[keyword] = {}
         for mkt in marketplaces:
-            cat_id = None
-            if category_map and keyword in category_map:
-                cat_info = category_map[keyword].get(mkt)
-                if cat_info:
-                    cat_id = cat_info.get("category_id")
-            
-            stats = get_sold_stats(keyword, mkt, cat_id, days)
+            stats = get_sold_stats(keyword, mkt, None, days)
             results[keyword][mkt] = stats
-    
     return results
 
+
 if __name__ == "__main__":
-    print("=== Sold Data Test ===\n")
-    
+    print("=== Finding API Test ===\n")
     test_keywords = ["Birkenstock Arizona", "Patagonia Nano Puff"]
-    
-    cat_map_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "category_map.json")
-    category_map = None
-    if os.path.exists(cat_map_path):
-        with open(cat_map_path) as f:
-            category_map = json.load(f)
-    
-    results = batch_sold_stats(test_keywords, category_map, marketplaces=("us",))
-    
+    results = batch_sold_stats(test_keywords, marketplaces=("us",))
     print(f"\n=== Results ===")
     for kw, markets in results.items():
         for mkt, stats in markets.items():
-            print(f"  {kw} ({mkt}): {stats}")
+            print(f"\n  {kw} ({mkt}):")
+            print(f"    sold_count={stats['sold_count']}, avg=${stats['avg_price']}")
+            print(f"    min=${stats['min_price']}, max=${stats['max_price']}")
+            for opt, opt_stats in stats.get("by_option", {}).items():
+                print(f"    {opt}: sold={opt_stats['sold_count']}, avg=${opt_stats['avg_price']}")
+            if stats.get("error"):
+                print(f"    ERROR: {stats['error']}")

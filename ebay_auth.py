@@ -11,6 +11,11 @@ import base64
 import time
 import os
 from pathlib import Path
+import sys
+
+# DNS patch for api.ebay.com resolution
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import dns_patch
 
 CREDENTIALS_PATH = Path.home() / ".openclaw" / ".ebay_credentials"
 TOKEN_PATH = Path.home() / ".openclaw" / ".ebay_tokens.json"
@@ -85,4 +90,3 @@ if __name__ == "__main__":
     token = get_token()
     print(f"Token acquired (expires in {int((json.load(open(TOKEN_PATH))['expires_at'] - time.time()) / 60)} min)")
     print(f"Type: Application Access Token")
-    print(f"Prefix: {token[:20]}...")

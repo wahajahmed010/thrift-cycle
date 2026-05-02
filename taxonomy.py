@@ -76,12 +76,43 @@ def find_categories_by_keyword(tree_data, keyword):
     matches.sort(key=lambda x: (-int(x["is_leaf"]), -x["match_score"]))
     return matches
 
-def search_category(tree_id, keyword):
-    """Search for a keyword in a specific marketplace category tree."""
+def search_categories(query, market="de"):
+    """Search categories by name for a given market. Returns list of matches.
+    
+    Alias: search_categories() is the public name; search_category() is also available.
+    """
+    tree_id = MARKETPLACE_TREES.get(market, 69)
     tree_data = fetch_category_tree(tree_id)
     if not tree_data:
         return []
-    return find_categories_by_keyword(tree_data, keyword)
+    # Flatten tree
+    def _flatten(node, path=""):
+        results = []
+        name = node.get("leaf_category_node_name", node.get("category", {}).get("name", ""))
+        cid = node.get("category", {}).get("category_id", node.get("leaf_category_node_id", ""))
+        is_leaf = node.get("leaf_category_node", True)
+        full_path = f"{path} > {name}" if path else name
+        results.append({
+            "category_id": str(cid),
+            "category_name": name,
+            "path": full_path,
+            "leaf": is_leaf,
+        })
+        for child in node.get("child_category_tree_nodes", []):
+            results.extend(_flatten(child, full_path))
+        return results
+    
+    categories = _flatten(tree_data.get("root_category_node", {}))
+    query_lower = query.lower()
+    matches = []
+    for cat in categories:
+        if query_lower in cat["category_name"].lower() or query_lower in cat["path"].lower():
+            matches.append(cat)
+    return matches
+
+# Aliases for spec compatibility
+search = search_categories
+search_category = search_categories
 
 def build_category_map(keywords):
     """Build category map for all keywords across DE and US marketplaces."""

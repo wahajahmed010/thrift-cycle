@@ -1,131 +1,171 @@
-const PIPELINE_DATA = {"date": "2026-05-01", "results": [
+const PIPELINE_DATA = {"date": "2026-05-02", "results": [
   {
-    "keyword": "Birkenstock Gizeh",
+    "keyword": "Jack Wolfskin DNA",
     "marketplace": "de",
-    "active": 161,
+    "active": 2,
     "sold": 20,
-    "avg_price": 36.76,
-    "sellability": 0.06,
-    "confidence": "LOW",
-    "trend": "\u2192"
-  },
-  {
-    "keyword": "Birkenstock Madrid",
-    "marketplace": "de",
-    "active": 144,
-    "sold": 20,
-    "avg_price": 35.91,
-    "sellability": 0.06,
-    "confidence": "LOW",
-    "trend": "\u2192"
-  },
-  {
-    "keyword": "Birkenstock EVA",
-    "marketplace": "de",
-    "active": 146,
-    "sold": 20,
-    "avg_price": 40.32,
-    "sellability": 0.06,
-    "confidence": "LOW",
-    "trend": "\u2192"
-  },
-  {
-    "keyword": "Lowa Renegade GTX",
-    "marketplace": "de",
-    "active": 100,
-    "sold": 20,
-    "avg_price": 58.0,
-    "sellability": 0.09,
-    "confidence": "LOW",
-    "trend": "\u2192"
-  },
-  {
-    "keyword": "Patagonia Nano Puff",
-    "marketplace": "de",
-    "active": 52,
-    "sold": 20,
-    "avg_price": 53.37,
-    "sellability": 0.17,
-    "confidence": "LOW",
-    "trend": "\u2192"
-  },
-  {
-    "keyword": "Lowa Camino GTX",
-    "marketplace": "de",
-    "active": 7,
-    "sold": 20,
-    "avg_price": 102.46,
-    "sellability": 1.27,
-    "confidence": "LOW",
-    "trend": "\u2192"
-  },
-  {
-    "keyword": "Birkenstock Arizona",
-    "marketplace": "us",
-    "active": 10155,
-    "sold": 0,
-    "avg_price": 60.87,
-    "sellability": 0,
-    "confidence": "LOW",
-    "trend": "\u2192"
-  },
-  {
-    "keyword": "Meindl Bhutan",
-    "marketplace": "de",
-    "active": 8,
-    "sold": 20,
-    "avg_price": 83.86,
-    "sellability": 1.11,
-    "confidence": "LOW",
-    "trend": "\u2192"
-  },
-  {
-    "keyword": "Patagonia Nano Puff",
-    "marketplace": "us",
-    "active": 4436,
-    "sold": 0,
-    "avg_price": 59.58,
-    "sellability": 0,
+    "avg_price": 27.36,
+    "sellability": 4.4444,
     "confidence": "LOW",
     "trend": "\u2192"
   },
   {
     "keyword": "Meindl Ortler",
     "marketplace": "de",
-    "active": 2,
+    "active": 4,
     "sold": 20,
     "avg_price": 94.51,
-    "sellability": 4.44,
+    "sellability": 2.2222,
+    "confidence": "LOW",
+    "trend": "\u2192"
+  },
+  {
+    "keyword": "Deuter Aircontact 65+10",
+    "marketplace": "de",
+    "active": 5,
+    "sold": 20,
+    "avg_price": 96.04,
+    "sellability": 1.7778,
+    "confidence": "LOW",
+    "trend": "\u2192"
+  },
+  {
+    "keyword": "Vaude Brenta",
+    "marketplace": "de",
+    "active": 9,
+    "sold": 20,
+    "avg_price": 63.39,
+    "sellability": 0.9877,
+    "confidence": "LOW",
+    "trend": "\u2192"
+  },
+  {
+    "keyword": "Ortlieb Back-Roller",
+    "marketplace": "de",
+    "active": 10,
+    "sold": 20,
+    "avg_price": 51.47,
+    "sellability": 0.8889,
+    "confidence": "LOW",
+    "trend": "\u2192"
+  },
+  {
+    "keyword": "Meindl Bhutan",
+    "marketplace": "de",
+    "active": 13,
+    "sold": 20,
+    "avg_price": 83.86,
+    "sellability": 0.6838,
+    "confidence": "LOW",
+    "trend": "\u2192"
+  },
+  {
+    "keyword": "Lowa Camino GTX",
+    "marketplace": "de",
+    "active": 15,
+    "sold": 20,
+    "avg_price": 102.46,
+    "sellability": 0.5926,
+    "confidence": "LOW",
+    "trend": "\u2192"
+  },
+  {
+    "keyword": "Deuter Futura",
+    "marketplace": "de",
+    "active": 23,
+    "sold": 20,
+    "avg_price": 66.74,
+    "sellability": 0.3865,
+    "confidence": "LOW",
+    "trend": "\u2192"
+  },
+  {
+    "keyword": "Ortlieb Velocity",
+    "marketplace": "de",
+    "active": 24,
+    "sold": 20,
+    "avg_price": 47.71,
+    "sellability": 0.3704,
+    "confidence": "LOW",
+    "trend": "\u2192"
+  },
+  {
+    "keyword": "Jack Wolfskin 3in1 Jacket",
+    "marketplace": "de",
+    "active": 38,
+    "sold": 20,
+    "avg_price": 32.96,
+    "sellability": 0.2339,
     "confidence": "LOW",
     "trend": "\u2192"
   },
   {
     "keyword": "Meindl Borneo",
     "marketplace": "de",
-    "active": 21,
+    "active": 42,
     "sold": 20,
     "avg_price": 99.09,
-    "sellability": 0.42,
-    "confidence": "LOW",
-    "trend": "\u2192"
-  },
-  {
-    "keyword": "Birkenstock Arizona",
-    "marketplace": "de",
-    "active": 147,
-    "sold": 20,
-    "avg_price": 26.44,
-    "sellability": 0.06,
+    "sellability": 0.2116,
     "confidence": "LOW",
     "trend": "\u2192"
   },
   {
     "keyword": "Birkenstock Boston",
     "marketplace": "de",
-    "active": 36,
+    "active": 73,
     "sold": 20,
     "avg_price": 59.52,
-    "sellability": 0.25,
+    "sellability": 0.1218,
+    "confidence": "LOW",
+    "trend": "\u2192"
+  },
+  {
+    "keyword": "Lowa Renegade GTX",
+    "marketplace": "de",
+    "active": 200,
+    "sold": 20,
+    "avg_price": 58.0,
+    "sellability": 0.0444,
+    "confidence": "LOW",
+    "trend": "\u2192"
+  },
+  {
+    "keyword": "Birkenstock Madrid",
+    "marketplace": "de",
+    "active": 297,
+    "sold": 20,
+    "avg_price": 35.91,
+    "sellability": 0.0299,
+    "confidence": "LOW",
+    "trend": "\u2192"
+  },
+  {
+    "keyword": "Birkenstock Arizona",
+    "marketplace": "de",
+    "active": 334,
+    "sold": 20,
+    "avg_price": 26.44,
+    "sellability": 0.0266,
+    "confidence": "LOW",
+    "trend": "\u2192"
+  },
+  {
+    "keyword": "Birkenstock Gizeh",
+    "marketplace": "de",
+    "active": 351,
+    "sold": 20,
+    "avg_price": 36.76,
+    "sellability": 0.0253,
+    "confidence": "LOW",
+    "trend": "\u2192"
+  },
+  {
+    "keyword": "Birkenstock EVA",
+    "marketplace": "de",
+    "active": 408,
+    "sold": 20,
+    "avg_price": 40.32,
+    "sellability": 0.0218,
     "confidence": "LOW",
     "trend": "\u2192"
   }
