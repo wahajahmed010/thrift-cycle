@@ -8,6 +8,7 @@ import json
 import os
 import sqlite3
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -239,10 +240,32 @@ def run_pipeline(keywords_de=None, keywords_us=None, days=30):
     processed = 0
 
     all_keywords = [("de", keywords_de), ("us", keywords_us)]
+    
+    # Max runtime safety: start timer
+    pipeline_start_time = time.time()
+    max_runtime_seconds = 1800  # 30 minutes
+    partial_results = []
+    partial_errors = []
+    
+    # Circuit breaker: skip Finding API after N consecutive failures
+    finding_failures = 0
+    FINDING_FAILURE_THRESHOLD = 3
+    skip_finding = False
 
     for mkt, keywords in all_keywords:
         mp_label = "EBAY-DE" if mkt == "de" else "EBAY-US"
         for keyword in keywords:
+            # Check runtime before each keyword
+            elapsed = time.time() - pipeline_start_time
+            if elapsed >= max_runtime_seconds:
+                print(f"\n⚠️  MAX RUNTIME ({max_runtime_seconds}s) REACHED. Saving partial results and exiting gracefully.")
+                errors.append(f"TIMEOUT: Stopped after {processed} keywords due to max runtime")
+                partial_results.extend(results)
+                partial_errors.extend(errors)
+                results = partial_results
+                errors = partial_errors
+                break
+            
             processed += 1
             print(f"[{processed}/{total_kws}] {keyword} ({mkt.upper()})")
 
@@ -341,6 +364,12 @@ def run_pipeline(keywords_de=None, keywords_us=None, days=30):
                     print(f"  active={total_active}, sold={total_sold}, "
                           f"avg=${avg_price:.0f}, STR={str_val:.1f}%, "
                           f"index={index_final:.3f} [{confidence}] {trend}")
+                    
+                    # Store the 'all' values for results summary
+                    all_sellability = index_final
+                    all_confidence = confidence
+                    all_str = str_val
+                    all_trend = trend
 
             conn.close()
 
@@ -350,9 +379,9 @@ def run_pipeline(keywords_de=None, keywords_us=None, days=30):
                 "active": total_active,
                 "sold": total_sold,
                 "avg_price": avg_price,
-                "sellability": index_final,
-                "confidence": confidence,
-                "trend": trend,
+                "sellability": all_sellability,
+                "confidence": all_confidence,
+                "trend": all_trend,
             })
 
     # --- Retention cleanup ---
@@ -388,15 +417,43 @@ def run_pipeline(keywords_de=None, keywords_us=None, days=30):
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
     import sys
-    # Use --full for all keywords, --test for 2-keyword test (default: full)
-    if "--test" in sys.argv:
-        test_de = ["Birkenstock Arizona", "Patagonia Nano Puff"]
-        test_us = ["Birkenstock Arizona", "Patagonia Nano Puff"]
+    import time
+    
+    args = sys.argv[1:]
+    fast_mode = "--fast" in args
+    test_mode = "--test" in args
+    
+    # Parse --market flag
+    market_filter = None
+    for i, arg in enumerate(args):
+        if arg == "--market" and i + 1 < len(args):
+            market_filter = args[i + 1].lower()
+            if market_filter not in ("de", "us"):
+                print(f"ERROR: --market must be 'de' or 'us', got '{market_filter}'")
+                sys.exit(1)
+    
+    if fast_mode:
+        keywords_de = KEYWORDS_DE[:10]
+        keywords_us = KEYWORDS_US[:10]
+        print("Running FAST pipeline (top 10 keywords per market)...\n")
+    elif test_mode:
+        keywords_de = ["Birkenstock Arizona", "Patagonia Nano Puff"]
+        keywords_us = ["Birkenstock Arizona", "Patagonia Nano Puff"]
         print("Running test pipeline with 4 keyword-market combos...\n")
-        results, messages, errors = run_pipeline(keywords_de=test_de, keywords_us=test_us)
     else:
+        keywords_de = KEYWORDS_DE
+        keywords_us = KEYWORDS_US
         print("Running full pipeline with all keywords...\n")
-        results, messages, errors = run_pipeline()
+    
+    # Apply market filter
+    if market_filter == "de":
+        keywords_us = []
+        print("Filtering to DE market only\n")
+    elif market_filter == "us":
+        keywords_de = []
+        print("Filtering to US market only\n")
+
+    results, messages, errors = run_pipeline(keywords_de=keywords_de, keywords_us=keywords_us)
 
     print(f"\n=== Pipeline Results ===")
     hot = [r for r in results if r["sellability"] >= 0.60]

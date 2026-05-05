@@ -1,0 +1,306 @@
+Running FAST pipeline (top 10 keywords per market)...
+
+=== Thrift-Cycle Pipeline — 2026-05-03 ===
+
+[1/20] Birkenstock Arizona (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=327, sold=20, avg=$26, STR=5.8%, index=0.027 [LOW] →
+[2/20] Birkenstock Boston (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=71, sold=20, avg=$60, STR=22.0%, index=0.125 [LOW] →
+[3/20] Birkenstock Gizeh (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=350, sold=20, avg=$37, STR=5.4%, index=0.025 [LOW] →
+[4/20] Birkenstock Madrid (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=292, sold=20, avg=$36, STR=6.4%, index=0.030 [LOW] →
+[5/20] Birkenstock EVA (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=402, sold=20, avg=$40, STR=4.7%, index=0.022 [LOW] →
+[6/20] Lowa Renegade GTX (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=199, sold=20, avg=$58, STR=9.1%, index=0.045 [LOW] →
+[7/20] Lowa Camino GTX (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=15, sold=20, avg=$102, STR=57.1%, index=0.593 [LOW] →
+[8/20] Meindl Bhutan (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=13, sold=20, avg=$84, STR=60.6%, index=0.684 [LOW] →
+[9/20] Meindl Ortler (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=4, sold=20, avg=$95, STR=83.3%, index=2.222 [LOW] →
+[10/20] Meindl Borneo (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=42, sold=20, avg=$99, STR=32.3%, index=0.212 [LOW] →
+[11/20] Birkenstock Arizona (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=10310, sold=0, avg=$61, STR=0.0%, index=0.000 [LOW] →
+[12/20] Birkenstock Boston (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=2887, sold=20, avg=$77, STR=0.7%, index=0.003 [LOW] →
+[13/20] Birkenstock Gizeh (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=5033, sold=20, avg=$50, STR=0.4%, index=0.002 [LOW] →
+[14/20] Birkenstock EVA (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=4893, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[15/20] Vintage Levi's 501 80s (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 501_80s_2026-04-26
+  active=7253, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[16/20] Vintage Levi's 501 90s (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 501_90s_2026-04-26
+  active=19308, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[17/20] Levi's 501 Red Line (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=1246, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[18/20] Levi's 501 Shrink-to-Fit (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 501_Shrink-to-Fit_2026-04-26
+  active=967, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[19/20] Patagonia Retro-X Fleece (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=3317, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[20/20] Patagonia Better Sweater (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=19250, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+
+=== Pipeline Complete ===
+Results: 20 | Errors: 0
+Data saved: /home/wahaj/.openclaw/workspace/thrift-cycle/data/2026-05-03.json
+Report: 1 message(s) generated
+
+=== Pipeline Results ===
+  HOT: 2, WARM: 1, COLD: 17, Total: 20
+  Meindl Ortler (de): active=4, sold=20, avg=$95, index=2.222 [HOT] →
+  Meindl Bhutan (de): active=13, sold=20, avg=$84, index=0.684 [HOT] →
+  Lowa Camino GTX (de): active=15, sold=20, avg=$102, index=0.593 [WARM] →
+  Meindl Borneo (de): active=42, sold=20, avg=$99, index=0.212 [COLD] →
+  Birkenstock Boston (de): active=71, sold=20, avg=$60, index=0.125 [COLD] →
+  Lowa Renegade GTX (de): active=199, sold=20, avg=$58, index=0.045 [COLD] →
+  Birkenstock Madrid (de): active=292, sold=20, avg=$36, index=0.030 [COLD] →
+  Birkenstock Arizona (de): active=327, sold=20, avg=$26, index=0.027 [COLD] →
+  Birkenstock Gizeh (de): active=350, sold=20, avg=$37, index=0.025 [COLD] →
+  Birkenstock EVA (de): active=402, sold=20, avg=$40, index=0.022 [COLD] →
+Running FAST pipeline (top 10 keywords per market)...
+
+=== Thrift-Cycle Pipeline — 2026-05-04 ===
+
+[1/20] Birkenstock Arizona (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=331, sold=20, avg=$26, STR=5.7%, index=0.027 [LOW] ▲
+[2/20] Birkenstock Boston (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=71, sold=20, avg=$60, STR=22.0%, index=0.125 [LOW] →
+[3/20] Birkenstock Gizeh (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=354, sold=20, avg=$37, STR=5.3%, index=0.025 [LOW] →
+[4/20] Birkenstock Madrid (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=293, sold=20, avg=$36, STR=6.4%, index=0.030 [LOW] →
+[5/20] Birkenstock EVA (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=398, sold=20, avg=$40, STR=4.8%, index=0.022 [LOW] →
+[6/20] Lowa Renegade GTX (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=200, sold=20, avg=$58, STR=9.1%, index=0.044 [LOW] →
+[7/20] Lowa Camino GTX (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=15, sold=20, avg=$102, STR=57.1%, index=0.593 [LOW] →
+[8/20] Meindl Bhutan (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=14, sold=20, avg=$84, STR=58.8%, index=0.635 [LOW] →
+[9/20] Meindl Ortler (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=3, sold=20, avg=$95, STR=87.0%, index=2.963 [LOW] →
+[10/20] Meindl Borneo (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=43, sold=20, avg=$99, STR=31.7%, index=0.207 [LOW] →
+[11/20] Birkenstock Arizona (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=10406, sold=0, avg=$61, STR=0.0%, index=0.000 [LOW] →
+[12/20] Birkenstock Boston (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=2889, sold=20, avg=$77, STR=0.7%, index=0.003 [LOW] →
+[13/20] Birkenstock Gizeh (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=5023, sold=20, avg=$50, STR=0.4%, index=0.002 [LOW] →
+[14/20] Birkenstock EVA (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=4941, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[15/20] Vintage Levi's 501 80s (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 501_80s_2026-04-26
+  active=7261, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[16/20] Vintage Levi's 501 90s (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 501_90s_2026-04-26
+  active=19382, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[17/20] Levi's 501 Red Line (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=1259, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[18/20] Levi's 501 Shrink-to-Fit (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 501_Shrink-to-Fit_2026-04-26
+  active=970, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[19/20] Patagonia Retro-X Fleece (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=3307, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[20/20] Patagonia Better Sweater (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=19266, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+
+=== Pipeline Complete ===
+Results: 20 | Errors: 0
+Data saved: /home/wahaj/.openclaw/workspace/thrift-cycle/data/2026-05-04.json
+Report: 1 message(s) generated
+
+=== Pipeline Results ===
+  HOT: 2, WARM: 1, COLD: 17, Total: 20
+  Meindl Ortler (de): active=3, sold=20, avg=$95, index=2.963 [HOT] →
+  Meindl Bhutan (de): active=14, sold=20, avg=$84, index=0.635 [HOT] →
+  Lowa Camino GTX (de): active=15, sold=20, avg=$102, index=0.593 [WARM] →
+  Meindl Borneo (de): active=43, sold=20, avg=$99, index=0.207 [COLD] →
+  Birkenstock Boston (de): active=71, sold=20, avg=$60, index=0.125 [COLD] →
+  Lowa Renegade GTX (de): active=200, sold=20, avg=$58, index=0.044 [COLD] →
+  Birkenstock Madrid (de): active=293, sold=20, avg=$36, index=0.030 [COLD] →
+  Birkenstock Arizona (de): active=331, sold=20, avg=$26, index=0.027 [COLD] ▲
+  Birkenstock Gizeh (de): active=354, sold=20, avg=$37, index=0.025 [COLD] →
+  Birkenstock EVA (de): active=398, sold=20, avg=$40, index=0.022 [COLD] →
+Running FAST pipeline (top 10 keywords per market)...
+
+=== Thrift-Cycle Pipeline — 2026-05-05 ===
+
+[1/20] Birkenstock Arizona (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=327, sold=20, avg=$26, STR=5.8%, index=0.027 [LOW] ▲
+[2/20] Birkenstock Boston (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=70, sold=20, avg=$60, STR=22.2%, index=0.127 [LOW] ▲
+[3/20] Birkenstock Gizeh (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=350, sold=20, avg=$37, STR=5.4%, index=0.025 [LOW] ▲
+[4/20] Birkenstock Madrid (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=292, sold=20, avg=$36, STR=6.4%, index=0.030 [LOW] ▲
+[5/20] Birkenstock EVA (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=387, sold=20, avg=$40, STR=4.9%, index=0.023 [LOW] ▲
+[6/20] Lowa Renegade GTX (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=200, sold=20, avg=$58, STR=9.1%, index=0.044 [LOW] ▲
+[7/20] Lowa Camino GTX (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=15, sold=20, avg=$102, STR=57.1%, index=0.593 [LOW] ▲
+[8/20] Meindl Bhutan (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=14, sold=20, avg=$84, STR=58.8%, index=0.635 [LOW] ▲
+[9/20] Meindl Ortler (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=3, sold=20, avg=$95, STR=87.0%, index=2.963 [LOW] ▲
+[10/20] Meindl Borneo (DE)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=41, sold=20, avg=$99, STR=32.8%, index=0.217 [LOW] ▲
+[11/20] Birkenstock Arizona (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=10365, sold=0, avg=$61, STR=0.0%, index=0.000 [LOW] →
+[12/20] Birkenstock Boston (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=2920, sold=20, avg=$77, STR=0.7%, index=0.003 [LOW] →
+[13/20] Birkenstock Gizeh (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=5016, sold=20, avg=$50, STR=0.4%, index=0.002 [LOW] →
+[14/20] Birkenstock EVA (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=4883, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[15/20] Vintage Levi's 501 80s (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 501_80s_2026-04-26
+  active=7271, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[16/20] Vintage Levi's 501 90s (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 501_90s_2026-04-26
+  active=19483, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[17/20] Levi's 501 Red Line (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=1258, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[18/20] Levi's 501 Shrink-to-Fit (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 501_Shrink-to-Fit_2026-04-26
+  active=968, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[19/20] Patagonia Retro-X Fleece (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=3307, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+[20/20] Patagonia Better Sweater (US)
+  [Finding API] Rate limited, retrying in 2.0s (attempt 1/1)...
+  ⚠️  API error, using cached data from 
+  active=19328, sold=0, avg=$0, STR=0.0%, index=0.000 [LOW] →
+
+=== Pipeline Complete ===
+Results: 20 | Errors: 0
+Data saved: /home/wahaj/.openclaw/workspace/thrift-cycle/data/2026-05-05.json
+Report: 1 message(s) generated
+
+=== Pipeline Results ===
+  HOT: 2, WARM: 1, COLD: 17, Total: 20
+  Meindl Ortler (de): active=3, sold=20, avg=$95, index=2.963 [HOT] ▲
+  Meindl Bhutan (de): active=14, sold=20, avg=$84, index=0.635 [HOT] ▲
+  Lowa Camino GTX (de): active=15, sold=20, avg=$102, index=0.593 [WARM] ▲
+  Meindl Borneo (de): active=41, sold=20, avg=$99, index=0.217 [COLD] ▲
+  Birkenstock Boston (de): active=70, sold=20, avg=$60, index=0.127 [COLD] ▲
+  Lowa Renegade GTX (de): active=200, sold=20, avg=$58, index=0.044 [COLD] ▲
+  Birkenstock Madrid (de): active=292, sold=20, avg=$36, index=0.030 [COLD] ▲
+  Birkenstock Arizona (de): active=327, sold=20, avg=$26, index=0.027 [COLD] ▲
+  Birkenstock Gizeh (de): active=350, sold=20, avg=$37, index=0.025 [COLD] ▲
+  Birkenstock EVA (de): active=387, sold=20, avg=$40, index=0.023 [COLD] ▲

@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ebay_auth import load_credentials
 from quota_tracker import (
     increment_calls, get_remaining_calls, is_quota_exceeded,
-    FINDING_DAILY_LIMIT, reset_if_new_day
+    FINDING_DAILY_LIMIT, reset_if_new_day, get_daily_calls
 )
 
 FINDING_URL = "https://svcs.ebay.com/services/search/FindingService/v1"
@@ -34,8 +34,8 @@ GLOBAL_IDS = {"de": "EBAY-DE", "us": "EBAY-US"}
 _last_call_time = 0.0
 # eBay Finding API: ~5 calls/sec max per IP, but ALSO daily limits per App ID
 # We use 1.0s to be safe and avoid the daily quota exhaustion
-_MIN_INTERVAL = 1.0
-_MAX_RETRIES = 3
+_MIN_INTERVAL = 2.5
+_MAX_RETRIES = 1
 _RETRY_DELAY = 2.0  # Initial retry delay in seconds
 
 # Minimum calls to reserve for critical operations
@@ -172,13 +172,25 @@ def _parse_finding_response(xml_bytes):
     return items, total_entries, total_pages, ack, None
 
 
+# Our own safety budget (separate from eBay's 5000 limit)
+_DAILY_CALL_BUDGET = 200
+
+
 def _call_finding_api(keyword, global_id, days=30, page=1, retry_count=0):
     """Make a single Finding API call via GET with query params.
     
     Retries on rate limit errors with exponential backoff.
     """
-    # Check quota before making call
+    # Check our own daily call budget first (separate from eBay's 5000 limit)
     reset_if_new_day()
+    daily_used = get_daily_calls("finding")
+    if daily_used >= _DAILY_CALL_BUDGET:
+        return [], 0, 0, "QuotaExceeded", (
+            f"Daily call budget exceeded ({_DAILY_CALL_BUDGET} calls). "
+            f"Used: {daily_used}"
+        )
+    
+    # Check eBay quota
     remaining = get_remaining_calls("finding")
     if remaining <= _MIN_RESERVE:
         return [], 0, 0, "QuotaExceeded", (
@@ -252,6 +264,10 @@ def _call_finding_api(keyword, global_id, days=30, page=1, retry_count=0):
         time.sleep(delay)
         return _call_finding_api(keyword, global_id, days, page, retry_count + 1)
     
+    # Early-exit signal for rate limits: return partial data with a marker
+    if ack == "RateLimit":
+        return items, entries, pages, "RateLimit", error
+    
     return items, entries, pages, ack, error
 
 
@@ -263,9 +279,14 @@ def find_completed_items(keyword, marketplace="de", days=30):
     all_items, total_entries = [], 0
     page, max_pages = 1, 100
     error = None
+    rate_limited = False
 
     while page <= max_pages:
         items, entries, pages, ack, call_error = _call_finding_api(keyword, global_id, days, page)
+        if ack == "RateLimit":
+            rate_limited = True
+            error = call_error or "Rate limited"
+            break  # Early-exit: don't paginate further for this keyword
         if call_error:
             error = call_error
             break

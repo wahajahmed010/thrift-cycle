@@ -75,8 +75,18 @@ def get_remaining_calls(api_name="finding", limit=None):
     return max(0, limit - get_daily_calls(api_name))
 
 
+# Our own safety budget (separate from eBay's 5000 limit)
+_DAILY_CALL_BUDGET = 200
+
+
+def get_daily_budget_remaining(api_name="finding", budget=None):
+    """Return remaining calls out of our own daily safety budget."""
+    if budget is None:
+        budget = _DAILY_CALL_BUDGET
+    return max(0, budget - get_daily_calls(api_name))
+
+
 def reset_if_new_day():
-    """Reset quota if it's a new day."""
     state = load_quota()
     pst_date = _get_pst_date()
     old_dates = [d for d in state.keys() if d != pst_date]

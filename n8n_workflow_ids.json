@@ -1,0 +1,14 @@
+{
+  "wf1": {
+    "name": "Thrift-Cycle Daily Pipeline",
+    "id": "jqcTM1nF49eQtDQv",
+    "active": false,
+    "ok": true
+  },
+  "wf2": {
+    "name": "Thrift-Cycle STR Alert",
+    "id": "jADswajVssh30seE",
+    "active": false,
+    "ok": true
+  }
+}
