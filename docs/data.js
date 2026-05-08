@@ -1,1 +1,505 @@
-const PIPELINE_DATA = {"date": "2026-05-08", "results": [{"keyword": "Birkenstock Arizona", "marketplace": "de", "active": 323, "sold": 20, "avg_price": 26.44, "sellability": 0.0275, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Birkenstock Boston", "marketplace": "de", "active": 70, "sold": 20, "avg_price": 59.52, "sellability": 0.127, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Birkenstock Gizeh", "marketplace": "de", "active": 342, "sold": 20, "avg_price": 36.76, "sellability": 0.026, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Birkenstock Madrid", "marketplace": "de", "active": 289, "sold": 20, "avg_price": 35.91, "sellability": 0.0308, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Birkenstock EVA", "marketplace": "de", "active": 376, "sold": 20, "avg_price": 40.32, "sellability": 0.0236, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Lowa Renegade GTX", "marketplace": "de", "active": 206, "sold": 20, "avg_price": 58.0, "sellability": 0.0431, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Lowa Camino GTX", "marketplace": "de", "active": 14, "sold": 20, "avg_price": 102.46, "sellability": 0.6349, "confidence": "LOW", "trend": "\u25b2"}, {"keyword": "Meindl Bhutan", "marketplace": "de", "active": 16, "sold": 20, "avg_price": 83.86, "sellability": 0.5556, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Meindl Ortler", "marketplace": "de", "active": 4, "sold": 20, "avg_price": 94.51, "sellability": 2.2222, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Meindl Borneo", "marketplace": "de", "active": 41, "sold": 20, "avg_price": 99.09, "sellability": 0.2168, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Ortlieb Back-Roller", "marketplace": "de", "active": 9, "sold": 20, "avg_price": 51.47, "sellability": 0.9877, "confidence": "LOW", "trend": "\u25b2"}, {"keyword": "Ortlieb Velocity", "marketplace": "de", "active": 21, "sold": 20, "avg_price": 47.71, "sellability": 0.4233, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Jack Wolfskin 3in1 Jacket", "marketplace": "de", "active": 38, "sold": 20, "avg_price": 32.96, "sellability": 0.2339, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Jack Wolfskin DNA", "marketplace": "de", "active": 2, "sold": 20, "avg_price": 27.36, "sellability": 4.4444, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Deuter Aircontact 65+10", "marketplace": "de", "active": 4, "sold": 20, "avg_price": 96.04, "sellability": 2.2222, "confidence": "LOW", "trend": "\u25b2"}, {"keyword": "Deuter Futura", "marketplace": "de", "active": 22, "sold": 20, "avg_price": 66.74, "sellability": 0.404, "confidence": "LOW", "trend": "\u25b2"}, {"keyword": "Vaude Brenta", "marketplace": "de", "active": 10, "sold": 20, "avg_price": 63.39, "sellability": 0.8889, "confidence": "LOW", "trend": "\u25bc"}, {"keyword": "Patagonia Retro-X Fleece", "marketplace": "de", "active": 97, "sold": 20, "avg_price": 59.33, "sellability": 0.0916, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Patagonia Better Sweater", "marketplace": "de", "active": 407, "sold": 20, "avg_price": 29.8, "sellability": 0.0218, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Patagonia Nano Puff", "marketplace": "de", "active": 103, "sold": 20, "avg_price": 53.37, "sellability": 0.0863, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Arc'teryx Beta LT", "marketplace": "de", "active": 12, "sold": 20, "avg_price": 100.92, "sellability": 0.7407, "confidence": "LOW", "trend": "\u25bc"}, {"keyword": "Arc'teryx Atom LT", "marketplace": "de", "active": 27, "sold": 20, "avg_price": 102.97, "sellability": 0.3292, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Arc'teryx Zeta SL", "marketplace": "de", "active": 2, "sold": 1, "avg_price": 90.0, "sellability": 0.0111, "confidence": "LOW", "trend": "\u25bc"}, {"keyword": "Vintage Levi's 501", "marketplace": "de", "active": 4184, "sold": 20, "avg_price": 30.16, "sellability": 0.0021, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Levi's 501 Made in USA", "marketplace": "de", "active": 824, "sold": 20, "avg_price": 42.07, "sellability": 0.0108, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Miu Miu Ballerinas", "marketplace": "de", "active": 121, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Repetto Ballerinas", "marketplace": "de", "active": 284, "sold": 20, "avg_price": 81.94, "sellability": 0.0313, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Chanel Ballerinas", "marketplace": "de", "active": 248, "sold": 20, "avg_price": 216.68, "sellability": 0.0358, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Birkenstock Arizona", "marketplace": "us", "active": 10370, "sold": 0, "avg_price": 60.87, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Birkenstock Boston", "marketplace": "us", "active": 2911, "sold": 20, "avg_price": 77.49, "sellability": 0.0031, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Birkenstock Gizeh", "marketplace": "us", "active": 4983, "sold": 20, "avg_price": 49.77, "sellability": 0.0018, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Birkenstock EVA", "marketplace": "us", "active": 4859, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Vintage Levi's 501 80s", "marketplace": "us", "active": 7360, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Vintage Levi's 501 90s", "marketplace": "us", "active": 19765, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Levi's 501 Red Line", "marketplace": "us", "active": 1271, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Levi's 501 Shrink-to-Fit", "marketplace": "us", "active": 966, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Patagonia Retro-X Fleece", "marketplace": "us", "active": 3329, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Patagonia Better Sweater", "marketplace": "us", "active": 19353, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Patagonia Nano Puff", "marketplace": "us", "active": 4498, "sold": 0, "avg_price": 59.58, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Patagonia Houdini", "marketplace": "us", "active": 449, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Patagonia Synchilla", "marketplace": "us", "active": 21899, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Arc'teryx Beta LT", "marketplace": "us", "active": 212, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Arc'teryx Atom LT", "marketplace": "us", "active": 561, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Arc'teryx Alpha SV", "marketplace": "us", "active": 246, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Arc'teryx Zeta SL", "marketplace": "us", "active": 108, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Arc'teryx Gamma MX", "marketplace": "us", "active": 158, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Lowa Renegade GTX", "marketplace": "us", "active": 338, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Meindl Bhutan", "marketplace": "us", "active": 4, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Tory Burch Ballet Flats", "marketplace": "us", "active": 8316, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}, {"keyword": "Miu Miu Ballet Flats", "marketplace": "us", "active": 357, "sold": 0, "avg_price": 0, "sellability": 0.0, "confidence": "LOW", "trend": "\u2192"}], "errors": []};
+const PIPELINE_DATA = {
+  "date": "2026-05-08",
+  "results": [
+    {
+      "keyword": "Arc'teryx Zeta SL",
+      "marketplace": "de",
+      "active": 2,
+      "sold": 20,
+      "avg_price": 114.62,
+      "sellability": 4.4444,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Jack Wolfskin DNA",
+      "marketplace": "de",
+      "active": 2,
+      "sold": 20,
+      "avg_price": 27.36,
+      "sellability": 4.4444,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Deuter Aircontact 65+10",
+      "marketplace": "de",
+      "active": 4,
+      "sold": 20,
+      "avg_price": 96.04,
+      "sellability": 2.2222,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Meindl Ortler",
+      "marketplace": "de",
+      "active": 4,
+      "sold": 20,
+      "avg_price": 94.51,
+      "sellability": 2.2222,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Ortlieb Back-Roller",
+      "marketplace": "de",
+      "active": 9,
+      "sold": 20,
+      "avg_price": 51.47,
+      "sellability": 0.9877,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Vaude Brenta",
+      "marketplace": "de",
+      "active": 10,
+      "sold": 20,
+      "avg_price": 63.39,
+      "sellability": 0.8889,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Arc'teryx Beta LT",
+      "marketplace": "de",
+      "active": 12,
+      "sold": 20,
+      "avg_price": 100.92,
+      "sellability": 0.7407,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Lowa Camino GTX",
+      "marketplace": "de",
+      "active": 14,
+      "sold": 20,
+      "avg_price": 102.46,
+      "sellability": 0.6349,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Meindl Bhutan",
+      "marketplace": "de",
+      "active": 16,
+      "sold": 20,
+      "avg_price": 83.86,
+      "sellability": 0.5556,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Ortlieb Velocity",
+      "marketplace": "de",
+      "active": 21,
+      "sold": 20,
+      "avg_price": 47.71,
+      "sellability": 0.4233,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Deuter Futura",
+      "marketplace": "de",
+      "active": 22,
+      "sold": 20,
+      "avg_price": 66.74,
+      "sellability": 0.404,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Arc'teryx Atom LT",
+      "marketplace": "de",
+      "active": 27,
+      "sold": 20,
+      "avg_price": 102.97,
+      "sellability": 0.3292,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Jack Wolfskin 3in1 Jacket",
+      "marketplace": "de",
+      "active": 38,
+      "sold": 20,
+      "avg_price": 32.96,
+      "sellability": 0.2339,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Meindl Borneo",
+      "marketplace": "de",
+      "active": 41,
+      "sold": 20,
+      "avg_price": 99.09,
+      "sellability": 0.2168,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Birkenstock Boston",
+      "marketplace": "de",
+      "active": 70,
+      "sold": 20,
+      "avg_price": 59.52,
+      "sellability": 0.127,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Patagonia Retro-X Fleece",
+      "marketplace": "de",
+      "active": 97,
+      "sold": 20,
+      "avg_price": 59.33,
+      "sellability": 0.0916,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Patagonia Nano Puff",
+      "marketplace": "de",
+      "active": 103,
+      "sold": 20,
+      "avg_price": 53.37,
+      "sellability": 0.0863,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Lowa Renegade GTX",
+      "marketplace": "de",
+      "active": 206,
+      "sold": 20,
+      "avg_price": 58.0,
+      "sellability": 0.0431,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Chanel Ballerinas",
+      "marketplace": "de",
+      "active": 248,
+      "sold": 20,
+      "avg_price": 216.68,
+      "sellability": 0.0358,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Repetto Ballerinas",
+      "marketplace": "de",
+      "active": 284,
+      "sold": 20,
+      "avg_price": 81.94,
+      "sellability": 0.0313,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Birkenstock Madrid",
+      "marketplace": "de",
+      "active": 289,
+      "sold": 20,
+      "avg_price": 35.91,
+      "sellability": 0.0308,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Birkenstock Arizona",
+      "marketplace": "de",
+      "active": 321,
+      "sold": 20,
+      "avg_price": 26.44,
+      "sellability": 0.0277,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Birkenstock Gizeh",
+      "marketplace": "de",
+      "active": 342,
+      "sold": 20,
+      "avg_price": 36.76,
+      "sellability": 0.026,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Birkenstock EVA",
+      "marketplace": "de",
+      "active": 376,
+      "sold": 20,
+      "avg_price": 40.32,
+      "sellability": 0.0236,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Patagonia Better Sweater",
+      "marketplace": "de",
+      "active": 407,
+      "sold": 20,
+      "avg_price": 29.8,
+      "sellability": 0.0218,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Levi's 501 Made in USA",
+      "marketplace": "de",
+      "active": 824,
+      "sold": 20,
+      "avg_price": 42.07,
+      "sellability": 0.0108,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Birkenstock Boston",
+      "marketplace": "us",
+      "active": 2911,
+      "sold": 20,
+      "avg_price": 77.49,
+      "sellability": 0.0031,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Vintage Levi's 501",
+      "marketplace": "de",
+      "active": 4184,
+      "sold": 20,
+      "avg_price": 30.16,
+      "sellability": 0.0021,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Birkenstock Gizeh",
+      "marketplace": "us",
+      "active": 4983,
+      "sold": 20,
+      "avg_price": 49.77,
+      "sellability": 0.0018,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Birkenstock EVA",
+      "marketplace": "us",
+      "active": 4859,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Vintage Levi's 501 80s",
+      "marketplace": "us",
+      "active": 7360,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Vintage Levi's 501 90s",
+      "marketplace": "us",
+      "active": 19764,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Levi's 501 Red Line",
+      "marketplace": "us",
+      "active": 1270,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Levi's 501 Shrink-to-Fit",
+      "marketplace": "us",
+      "active": 966,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Patagonia Retro-X Fleece",
+      "marketplace": "us",
+      "active": 3330,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Miu Miu Ballerinas",
+      "marketplace": "de",
+      "active": 121,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Patagonia Better Sweater",
+      "marketplace": "us",
+      "active": 19352,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Patagonia Houdini",
+      "marketplace": "us",
+      "active": 449,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Patagonia Synchilla",
+      "marketplace": "us",
+      "active": 21900,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Arc'teryx Beta LT",
+      "marketplace": "us",
+      "active": 212,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Arc'teryx Atom LT",
+      "marketplace": "us",
+      "active": 561,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Arc'teryx Alpha SV",
+      "marketplace": "us",
+      "active": 246,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Arc'teryx Zeta SL",
+      "marketplace": "us",
+      "active": 108,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Arc'teryx Gamma MX",
+      "marketplace": "us",
+      "active": 158,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Lowa Renegade GTX",
+      "marketplace": "us",
+      "active": 338,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Meindl Bhutan",
+      "marketplace": "us",
+      "active": 4,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Tory Burch Ballet Flats",
+      "marketplace": "us",
+      "active": 8313,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Miu Miu Ballet Flats",
+      "marketplace": "us",
+      "active": 357,
+      "sold": 0,
+      "avg_price": 0.0,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Birkenstock Arizona",
+      "marketplace": "us",
+      "active": 10370,
+      "sold": 0,
+      "avg_price": 60.87,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    },
+    {
+      "keyword": "Patagonia Nano Puff",
+      "marketplace": "us",
+      "active": 4498,
+      "sold": 0,
+      "avg_price": 59.58,
+      "sellability": 0.0,
+      "confidence": "LOW",
+      "trend": "\u2192"
+    }
+  ]
+};
